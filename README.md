@@ -21,7 +21,7 @@ allprojects {
 ### 步骤2
 ```
 dependencies {
-         implementation 'com.github.Doris1112:IBase:1.0.1'
+         implementation 'com.github.Doris1112:IBase:1.0.2'
 }
 ```
 或者
@@ -29,6 +29,6 @@ dependencies {
 <dependency>
         <groupId>com.github.Doris1112</groupId>
         <artifactId>IBase</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
 </dependency>
 ```
