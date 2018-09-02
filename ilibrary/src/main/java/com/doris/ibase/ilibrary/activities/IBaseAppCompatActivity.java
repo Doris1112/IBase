@@ -27,7 +27,7 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
         // 初始化参数
         if (initArgs(getIntent())) {
             // 添加Activity
-            ActivityContainer.getInstance().addActivity(this);
+            IActivityContainer.getInstance().addActivity(this);
             // 得到界面Id并设置到Activity界面中
             setContentView(getContentLayoutId());
             initBefore();

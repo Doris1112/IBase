@@ -9,16 +9,16 @@ import java.util.List;
  * @author Doris.
  * @date 2018/8/20.
  */
-public class ActivityContainer {
+public class IActivityContainer {
 
-    private ActivityContainer() { }
+    private IActivityContainer() { }
 
-    private static ActivityContainer instance;
+    private static IActivityContainer instance;
     private List<Activity> activityStack = new ArrayList<>();
 
-    public static ActivityContainer getInstance() {
+    public static IActivityContainer getInstance() {
         if (instance == null){
-            instance  = new ActivityContainer();
+            instance  = new IActivityContainer();
         }
         return instance;
     }

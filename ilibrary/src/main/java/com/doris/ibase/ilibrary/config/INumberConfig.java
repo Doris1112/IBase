@@ -3,7 +3,7 @@ package com.doris.ibase.ilibrary.config;
 /**
  * Created by Doris on 2018/9/1.
  */
-public class NumberConfig {
+public class INumberConfig {
 
     public static final int ZERO = 0;
     public static final int ONE = 1;

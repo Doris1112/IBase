@@ -6,17 +6,15 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import com.doris.ibase.ilibrary.utils.AppCrashHandler;
+import com.doris.ibase.ilibrary.utils.IAppCrashHandler;
 import com.doris.ibase.ilibrary.utils.ILogUtils;
-
-import java.io.File;
 
 /**
  * Created by Doris on 2018/1/25.
  */
 public abstract class IBaseApplication extends MultiDexApplication {
 
-    private static IBaseApplication instance;
+    protected static IBaseApplication instance;
 
     @Override
     public void onCreate() {
@@ -26,7 +24,7 @@ public abstract class IBaseApplication extends MultiDexApplication {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
-        AppCrashHandler.getInstance(getLogUtils()).init(getApplicationContext());
+        IAppCrashHandler.getInstance(getLogUtils()).init(getApplicationContext());
     }
 
     @Override
@@ -36,23 +34,5 @@ public abstract class IBaseApplication extends MultiDexApplication {
     }
 
     protected abstract ILogUtils getLogUtils();
-
-    /**
-     * 外部获取单例
-     *
-     * @return Application
-     */
-    public static IBaseApplication getInstance() {
-        return instance;
-    }
-
-    /**
-     * 获取缓存文件夹地址
-     *
-     * @return 当前APP的缓存文件夹地址
-     */
-    public static File getCacheDirFile() {
-        return instance.getCacheDir();
-    }
 
 }

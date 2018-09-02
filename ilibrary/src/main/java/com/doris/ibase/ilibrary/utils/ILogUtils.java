@@ -1,8 +1,10 @@
 package com.doris.ibase.ilibrary.utils;
 
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,10 +50,27 @@ public abstract class ILogUtils {
     protected abstract boolean getLogEncrypt();
 
     /**
-     * 加密密钥
+     * 读取日志
+     *
+     * @param filePath
      * @return
      */
-    protected abstract String getPasswordCryptKey();
+    public String redLog(String filePath) {
+        String result = "";
+        try {
+            File f = new File(filePath);
+            int length = (int) f.length();
+            byte[] buff = new byte[length];
+            FileInputStream fin = new FileInputStream(f);
+            fin.read(buff);
+            fin.close();
+            result = new String(buff, "GBK");
+            result = new String(Base64.decode(result, Base64.DEFAULT));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     /**
      * 插入日志
@@ -72,7 +91,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = I3DESUtil.getInstance(getPasswordCryptKey()).encryptMode(msg);
+                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));
@@ -116,7 +135,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = I3DESUtil.getInstance(getPasswordCryptKey()).encryptMode(msg);
+                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));
@@ -154,7 +173,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = I3DESUtil.getInstance(getPasswordCryptKey()).encryptMode(msg);
+                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));

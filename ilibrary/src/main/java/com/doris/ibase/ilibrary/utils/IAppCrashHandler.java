@@ -7,20 +7,20 @@ import android.content.pm.PackageManager;
 /**
  * Created by Doris on 2018/8/29.
  */
-public class AppCrashHandler implements Thread.UncaughtExceptionHandler {
+public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
 
     private Thread.UncaughtExceptionHandler mDefaultHandler;
-    private static AppCrashHandler instance;
+    private static IAppCrashHandler instance;
     private Context mContext;
     private ILogUtils logUtils;
 
-    private AppCrashHandler(ILogUtils logUtils) {
+    private IAppCrashHandler(ILogUtils logUtils) {
         this.logUtils = logUtils;
     }
 
-    public static AppCrashHandler getInstance(ILogUtils logUtils) {
+    public static IAppCrashHandler getInstance(ILogUtils logUtils) {
         if (instance == null) {
-            instance = new AppCrashHandler(logUtils);
+            instance = new IAppCrashHandler(logUtils);
         }
         return instance;
     }

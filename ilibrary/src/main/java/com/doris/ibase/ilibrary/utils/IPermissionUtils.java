@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Doris on 2018/9/1.
  */
-public class PermissionUtils {
+public class IPermissionUtils {
 
     /**
      * 监测App是否已授予某些权限
