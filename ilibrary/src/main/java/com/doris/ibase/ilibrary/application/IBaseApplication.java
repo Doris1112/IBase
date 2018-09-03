@@ -14,12 +14,9 @@ import com.doris.ibase.ilibrary.utils.ILogUtils;
  */
 public abstract class IBaseApplication extends MultiDexApplication {
 
-    protected static IBaseApplication instance;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());

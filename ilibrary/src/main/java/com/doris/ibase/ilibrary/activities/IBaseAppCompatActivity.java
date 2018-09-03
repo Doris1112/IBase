@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.doris.ibase.ilibrary.config.INumberConfig;
+
 /**
  * @author Doris
  * @date 2018/8/20.
@@ -14,10 +16,6 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
      * 最后一次点击时间
      */
     private long lastClickTime;
-    /**
-     * 两次点击时间间隔
-     */
-    protected int clickInterval = 900;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +109,7 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
      */
     private boolean isFastDoubleClick() {
         long time = System.currentTimeMillis();
-        if (time - lastClickTime < clickInterval) {
+        if (time - lastClickTime < INumberConfig.CLICK_INTERVAL) {
             return true;
         }
         lastClickTime = time;

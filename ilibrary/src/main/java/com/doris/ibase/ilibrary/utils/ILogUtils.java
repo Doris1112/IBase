@@ -1,6 +1,5 @@
 package com.doris.ibase.ilibrary.utils;
 
-import android.util.Base64;
 import android.util.Log;
 
 import java.io.File;
@@ -50,6 +49,22 @@ public abstract class ILogUtils {
     protected abstract boolean getLogEncrypt();
 
     /**
+     * 解密
+     *
+     * @param string
+     * @return
+     */
+    protected abstract String decode(String string);
+
+    /**
+     * 加密
+     *
+     * @param string
+     * @return
+     */
+    protected abstract String encode(String string);
+
+    /**
      * 读取日志
      *
      * @param filePath
@@ -65,7 +80,9 @@ public abstract class ILogUtils {
             fin.read(buff);
             fin.close();
             result = new String(buff, "GBK");
-            result = new String(Base64.decode(result, Base64.DEFAULT));
+            if (getLogEncrypt()) {
+                result = decode(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,7 +108,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
+                    msg = encode(msg);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));
@@ -135,7 +152,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
+                    msg = encode(msg);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));
@@ -173,7 +190,7 @@ public abstract class ILogUtils {
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
                 if (getLogEncrypt()) {
-                    msg = Base64.encodeToString(msg.getBytes(), Base64.DEFAULT);
+                    msg = encode(msg);
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));

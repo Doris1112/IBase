@@ -19,4 +19,6 @@ public class INumberConfig {
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
 
+    public static final int CLICK_INTERVAL = 500;
+
 }
