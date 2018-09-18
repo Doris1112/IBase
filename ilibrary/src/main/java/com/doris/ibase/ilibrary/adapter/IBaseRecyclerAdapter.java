@@ -47,11 +47,11 @@ public abstract class IBaseRecyclerAdapter<Data>
     public int getItemViewType(int position) {
         try {
             if ((mHeaderList.size() > 0 && position < mHeaderList.size()) ||
-                    (mFooterList.size() > 0 && position > (mHeaderList.size() + mDataList.size()))) {
+                    (mFooterList.size() > 0 && position >= (mHeaderList.size() + mDataList.size()))) {
                 // 头部或底部
                 return position;
             }
-            return getItemViewType(position, mDataList.get(position));
+            return getItemViewType(position, mDataList.get(position - mHeaderList.size()));
         } catch (Exception e) {
             // 以防下标越界，程序异常
             return getItemViewType(position, null);
@@ -68,11 +68,11 @@ public abstract class IBaseRecyclerAdapter<Data>
      */
     @Override
     public ViewHolder<Data> onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (mHeaderList.size() > 0 && viewType > mHeaderList.size()){
+        if (mHeaderList.size() > 0 && viewType > mHeaderList.size()) {
             // 头部
             return new HeadHolder(mHeaderList.get(viewType));
         }
-        if (mFooterList.size() > 0 && viewType > (mHeaderList.size() + mDataList.size())){
+        if (mFooterList.size() > 0 && viewType > (mHeaderList.size() + mDataList.size())) {
             // 底部
             return new FootHolder(mFooterList.get(viewType));
         }
@@ -114,40 +114,52 @@ public abstract class IBaseRecyclerAdapter<Data>
 
     /**
      * 添加头部
+     *
      * @param view
      */
-    public void addHeader(View view){
-        mHeaderList.add(view);
-        notifyItemChanged(mHeaderList.size() - 1);
+    public void addHeader(View view) {
+        if (view != null) {
+            mHeaderList.add(view);
+            notifyItemChanged(mHeaderList.size() - 1);
+        }
     }
 
     /**
      * 移除头部
+     *
      * @param view
      */
-    public void removeHeader(View view){
-        int position = mHeaderList.indexOf(view);
-        mHeaderList.remove(view);
-        notifyItemRemoved(position);
+    public void removeHeader(View view) {
+        if (view != null && mHeaderList.size() > 0) {
+            int position = mHeaderList.indexOf(view);
+            mHeaderList.remove(view);
+            notifyItemRemoved(position);
+        }
     }
 
     /**
      * 添加底部
+     *
      * @param view
      */
-    public void addFooter(View view){
-        mFooterList.add(view);
-        notifyItemChanged(mHeaderList.size() + mDataList.size() + mFooterList.size() - 1);
+    public void addFooter(View view) {
+        if (view != null) {
+            mFooterList.add(view);
+            notifyItemChanged(mHeaderList.size() + mDataList.size() + mFooterList.size() - 1);
+        }
     }
 
     /**
      * 移除底部
+     *
      * @param view
      */
-    public void removeFooter(View view){
-        int position = mHeaderList.size() + mDataList.size() + mFooterList.indexOf(view);
-        mFooterList.remove(view);
-        notifyItemRemoved(position);
+    public void removeFooter(View view) {
+        if (view != null && mFooterList.size() > 0) {
+            int position = mHeaderList.size() + mDataList.size() + mFooterList.indexOf(view);
+            mFooterList.remove(view);
+            notifyItemRemoved(position);
+        }
     }
 
     /**
