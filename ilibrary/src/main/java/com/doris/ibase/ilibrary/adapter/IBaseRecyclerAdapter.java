@@ -1,6 +1,7 @@
 package com.doris.ibase.ilibrary.adapter;
 
 import android.support.annotation.LayoutRes;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.view.ViewGroup;
 import com.doris.ibase.ilibrary.R;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -20,6 +20,8 @@ public abstract class IBaseRecyclerAdapter<Data>
         implements View.OnClickListener, View.OnLongClickListener, IBaseAdapterCallback<Data> {
 
     private final LinkedList<Data> mDataList;
+    private final LinkedList<View> mHeaderList = new LinkedList<>();
+    private final LinkedList<View> mFooterList = new LinkedList<>();
     private AdapterListener<Data> mListener;
 
     public IBaseRecyclerAdapter() {
@@ -43,9 +45,14 @@ public abstract class IBaseRecyclerAdapter<Data>
      */
     @Override
     public int getItemViewType(int position) {
-        try{
+        try {
+            if ((mHeaderList.size() > 0 && position < mHeaderList.size()) ||
+                    (mFooterList.size() > 0 && position > (mHeaderList.size() + mDataList.size()))) {
+                // 头部或底部
+                return position;
+            }
             return getItemViewType(position, mDataList.get(position));
-        } catch (Exception e){
+        } catch (Exception e) {
             // 以防下标越界，程序异常
             return getItemViewType(position, null);
         }
@@ -61,6 +68,14 @@ public abstract class IBaseRecyclerAdapter<Data>
      */
     @Override
     public ViewHolder<Data> onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (mHeaderList.size() > 0 && viewType > mHeaderList.size()){
+            // 头部
+            return new HeadHolder(mHeaderList.get(viewType));
+        }
+        if (mFooterList.size() > 0 && viewType > (mHeaderList.size() + mDataList.size())){
+            // 底部
+            return new FootHolder(mFooterList.get(viewType));
+        }
         // 得到LayoutInflater用于把XML初始化未View
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         // 把XML ID为viewType的文件初始化为一个root view
@@ -94,7 +109,45 @@ public abstract class IBaseRecyclerAdapter<Data>
 
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        return mHeaderList.size() + mDataList.size() + mFooterList.size();
+    }
+
+    /**
+     * 添加头部
+     * @param view
+     */
+    public void addHeader(View view){
+        mHeaderList.add(view);
+        notifyItemChanged(mHeaderList.size() - 1);
+    }
+
+    /**
+     * 移除头部
+     * @param view
+     */
+    public void removeHeader(View view){
+        int position = mHeaderList.indexOf(view);
+        mHeaderList.remove(view);
+        notifyItemRemoved(position);
+    }
+
+    /**
+     * 添加底部
+     * @param view
+     */
+    public void addFooter(View view){
+        mFooterList.add(view);
+        notifyItemChanged(mHeaderList.size() + mDataList.size() + mFooterList.size() - 1);
+    }
+
+    /**
+     * 移除底部
+     * @param view
+     */
+    public void removeFooter(View view){
+        int position = mHeaderList.size() + mDataList.size() + mFooterList.indexOf(view);
+        mFooterList.remove(view);
+        notifyItemRemoved(position);
     }
 
     /**
@@ -103,20 +156,9 @@ public abstract class IBaseRecyclerAdapter<Data>
      * @param data
      */
     public void add(Data data) {
-        mDataList.add(data);
-        notifyItemInserted(mDataList.size() - 1);
-    }
-
-    /**
-     * 添加一堆数据并通知这段集合更新
-     *
-     * @param dataList
-     */
-    public void add(Data... dataList) {
-        if (dataList != null && dataList.length > 0) {
-            int startPos = mDataList.size();
-            Collections.addAll(mDataList, dataList);
-            notifyItemRangeInserted(startPos, dataList.length);
+        if (data != null) {
+            mDataList.add(data);
+            notifyItemInserted(mHeaderList.size() + mDataList.size() - 1);
         }
     }
 
@@ -127,19 +169,10 @@ public abstract class IBaseRecyclerAdapter<Data>
      */
     public void add(Collection<Data> dataList) {
         if (dataList != null && dataList.size() > 0) {
-            int startPos = mDataList.size();
+            int startPos = mHeaderList.size() + mDataList.size();
             mDataList.addAll(dataList);
             notifyItemRangeInserted(startPos, dataList.size());
         }
-    }
-
-    /**
-     * 添加一堆数据并通知这段集合更新
-     *
-     * @param data
-     */
-    public void addFirst(Data data) {
-        mDataList.addFirst(data);
     }
 
     /**
@@ -157,19 +190,21 @@ public abstract class IBaseRecyclerAdapter<Data>
 
     /**
      * 替换指定位置数据
+     *
      * @param position
      * @param data
      */
-    public void replace(int position, Data data){
+    public void replace(int position, Data data) {
         mDataList.set(position, data);
         notifyItemChanged(position);
     }
 
     /**
      * 根据下标移除数据
+     *
      * @param position
      */
-    public void removeAtIndex(int position){
+    public void removeAtIndex(int position) {
         mDataList.remove(position);
         notifyItemRemoved(position);
     }
@@ -222,8 +257,35 @@ public abstract class IBaseRecyclerAdapter<Data>
     public interface AdapterListener<Data> {
         // 当Cell点击时触发
         void onItemClick(IBaseRecyclerAdapter.ViewHolder<Data> holder, Data data);
+
         // 当Cell长按时触发
         void onItemLongClick(IBaseRecyclerAdapter.ViewHolder<Data> holder, Data data);
+    }
+
+    public GridSpanSizeLookup obtainGridSpanSizeLookUp(int maxCount) {
+        return new GridSpanSizeLookup(maxCount);
+    }
+
+    public class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+        private int mMaxCount;
+
+        public GridSpanSizeLookup(int maxCount) {
+            this.mMaxCount = maxCount;
+        }
+
+        @Override
+        public int getSpanSize(int position) {
+            if (mHeaderList.size() > 0) {
+                if (position < mHeaderList.size()) return mMaxCount;
+            }
+            if (mFooterList.size() > 0) {
+                int i = position - mHeaderList.size() - mDataList.size();
+                if (i >= 0) {
+                    return mMaxCount;
+                }
+            }
+            return 1;
+        }
     }
 
     /**
@@ -266,6 +328,30 @@ public abstract class IBaseRecyclerAdapter<Data>
             if (callback != null) {
                 callback.update(data, this);
             }
+        }
+    }
+
+    public static class HeadHolder extends ViewHolder {
+
+        public HeadHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        protected void onBind(Object o) {
+
+        }
+    }
+
+    public static class FootHolder extends ViewHolder {
+
+        public FootHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        protected void onBind(Object o) {
+
         }
     }
 }
