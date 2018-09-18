@@ -72,7 +72,7 @@ public abstract class IBaseRecyclerAdapter<Data>
             // 头部
             return new HeadHolder(mHeaderList.get(viewType));
         }
-        if (mFooterList.size() > 0 && viewType > (mHeaderList.size() + mDataList.size())) {
+        if (mFooterList.size() > 0 && viewType >= (mHeaderList.size() + mDataList.size())) {
             // 底部
             return new FootHolder(mFooterList.get(viewType));
         }
