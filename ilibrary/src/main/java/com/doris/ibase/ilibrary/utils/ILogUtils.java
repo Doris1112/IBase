@@ -2,10 +2,13 @@ package com.doris.ibase.ilibrary.utils;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -71,22 +74,28 @@ public abstract class ILogUtils {
      * @return
      */
     public String redLog(String filePath) {
-        String result = "";
+        StringBuffer result = new StringBuffer();
         try {
-            File f = new File(filePath);
-            int length = (int) f.length();
-            byte[] buff = new byte[length];
-            FileInputStream fin = new FileInputStream(f);
-            fin.read(buff);
-            fin.close();
-            result = new String(buff, "GBK");
-            if (getLogEncrypt()) {
-                result = decode(result);
+            File file = new File(filePath);
+            InputStream stream = new FileInputStream(file);
+            if (stream != null) {
+                InputStreamReader reader = new InputStreamReader(stream);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String line;
+                //分行读取
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (getLogEncrypt()) {
+                        result.append(decode(line) + "\n");
+                    } else {
+                        result.append(line + "\n");
+                    }
+                }
+                stream.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return result.toString();
     }
 
     /**
@@ -106,9 +115,11 @@ public abstract class ILogUtils {
             }
             FileOutputStream fos = null;
             try {
-                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
+                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg;
                 if (getLogEncrypt()) {
-                    msg = encode(msg);
+                    msg = encode(msg) + "\r\n";
+                } else {
+                    msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));
@@ -136,41 +147,8 @@ public abstract class ILogUtils {
      * @param throwable
      */
     public void writeLog(String msg, Throwable throwable) {
-        if (msg == null) {
-            return;
-        }
-        Log.i(getTag(), msg);
-        throwable.printStackTrace();
-        if (getLogSwitch()) {
-            File file = checkLogFileIsExist();
-            if (file == null) {
-                return;
-            }
-            msg += "\r\n";
-            msg += getExceptionInfo(throwable);
-            FileOutputStream fos = null;
-            try {
-                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
-                if (getLogEncrypt()) {
-                    msg = encode(msg);
-                }
-                fos = new FileOutputStream(file, true);
-                fos.write(msg.getBytes("GBK"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (fos != null) {
-                        fos.close();
-                        fos = null;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                fos = null;
-                file = null;
-            }
-        }
+        writeLog(msg);
+        writeLog(throwable);
     }
 
     /**
@@ -185,12 +163,14 @@ public abstract class ILogUtils {
             if (file == null) {
                 return;
             }
-            String msg = "\r\n" + getExceptionInfo(throwable);
+            String msg = getExceptionInfo(throwable);
             FileOutputStream fos = null;
             try {
-                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg + "\r\n";
+                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg;
                 if (getLogEncrypt()) {
-                    msg = encode(msg);
+                    msg = encode(msg) + "\r\n";
+                } else {
+                    msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
                 fos.write(msg.getBytes("GBK"));

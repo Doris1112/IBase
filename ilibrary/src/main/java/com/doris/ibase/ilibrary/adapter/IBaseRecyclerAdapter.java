@@ -68,14 +68,22 @@ public abstract class IBaseRecyclerAdapter<Data>
      */
     @Override
     public ViewHolder<Data> onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (mHeaderList.size() > 0 && viewType > mHeaderList.size()) {
-            // 头部
-            return new HeadHolder(mHeaderList.get(viewType));
+        try {
+            if (mHeaderList.size() > 0 && viewType > mHeaderList.size()) {
+                // 头部
+                return new HeadHolder(mHeaderList.get(viewType));
+            }
+            if (mFooterList.size() > 0 && viewType >= (mHeaderList.size() + mDataList.size())) {
+                // 底部
+                return new FootHolder(mFooterList.get(viewType - mHeaderList.size() - mDataList.size()));
+            }
+            return getViewHolder(parent, viewType);
+        } catch (Exception e){
+            return getViewHolder(parent, viewType);
         }
-        if (mFooterList.size() > 0 && viewType >= (mHeaderList.size() + mDataList.size())) {
-            // 底部
-            return new FootHolder(mFooterList.get(viewType - mHeaderList.size() - mDataList.size()));
-        }
+    }
+
+    private ViewHolder<Data> getViewHolder(ViewGroup parent, int viewType){
         // 得到LayoutInflater用于把XML初始化未View
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         // 把XML ID为viewType的文件初始化为一个root view
