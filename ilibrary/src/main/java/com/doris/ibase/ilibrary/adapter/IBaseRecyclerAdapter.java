@@ -74,7 +74,7 @@ public abstract class IBaseRecyclerAdapter<Data>
         }
         if (mFooterList.size() > 0 && viewType >= (mHeaderList.size() + mDataList.size())) {
             // 底部
-            return new FootHolder(mFooterList.get(viewType));
+            return new FootHolder(mFooterList.get(viewType - mHeaderList.size() - mDataList.size()));
         }
         // 得到LayoutInflater用于把XML初始化未View
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
