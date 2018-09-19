@@ -44,7 +44,7 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
                 e.printStackTrace();
             }
             android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(10);
+            System.exit(1);
         }
     }
 
@@ -61,7 +61,8 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
-                logUtils.writeLog("程序崩溃！版本号:　" + pi.versionName, ex);
+                logUtils.writeLog("程序崩溃！版本号:　" + pi.versionName);
+                logUtils.writeLog(ex);
                 ex.printStackTrace();
             }
         } catch (Exception e) {

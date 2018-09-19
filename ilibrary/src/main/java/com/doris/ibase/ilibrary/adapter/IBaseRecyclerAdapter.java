@@ -78,12 +78,12 @@ public abstract class IBaseRecyclerAdapter<Data>
                 return new FootHolder(mFooterList.get(viewType - mHeaderList.size() - mDataList.size()));
             }
             return getViewHolder(parent, viewType);
-        } catch (Exception e){
+        } catch (Exception e) {
             return getViewHolder(parent, viewType);
         }
     }
 
-    private ViewHolder<Data> getViewHolder(ViewGroup parent, int viewType){
+    private ViewHolder<Data> getViewHolder(ViewGroup parent, int viewType) {
         // 得到LayoutInflater用于把XML初始化未View
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         // 把XML ID为viewType的文件初始化为一个root view
@@ -120,6 +120,10 @@ public abstract class IBaseRecyclerAdapter<Data>
         return mHeaderList.size() + mDataList.size() + mFooterList.size();
     }
 
+    public LinkedList<View> getHeaderList() {
+        return mHeaderList;
+    }
+
     /**
      * 添加头部
      *
@@ -146,6 +150,21 @@ public abstract class IBaseRecyclerAdapter<Data>
     }
 
     /**
+     * 清空头部
+     */
+    public void removeAllHeader() {
+        int count = mHeaderList.size();
+        if (count > 0) {
+            mHeaderList.clear();
+            notifyItemRangeRemoved(0, count);
+        }
+    }
+
+    public LinkedList<View> getFooterList() {
+        return mFooterList;
+    }
+
+    /**
      * 添加底部
      *
      * @param view
@@ -168,6 +187,21 @@ public abstract class IBaseRecyclerAdapter<Data>
             mFooterList.remove(view);
             notifyItemRemoved(position);
         }
+    }
+
+    /**
+     * 清空底部
+     */
+    public void removeAllFooter() {
+        int count = mFooterList.size();
+        if (count > 0) {
+            mFooterList.clear();
+            notifyItemRangeRemoved(mFooterList.size() + mDataList.size(), count);
+        }
+    }
+
+    public LinkedList<Data> getDataList() {
+        return mDataList;
     }
 
     /**
@@ -351,6 +385,9 @@ public abstract class IBaseRecyclerAdapter<Data>
         }
     }
 
+    /**
+     * 头部holder
+     */
     public static class HeadHolder extends ViewHolder {
 
         public HeadHolder(View itemView) {
@@ -363,6 +400,9 @@ public abstract class IBaseRecyclerAdapter<Data>
         }
     }
 
+    /**
+     * 底部holder
+     */
     public static class FootHolder extends ViewHolder {
 
         public FootHolder(View itemView) {

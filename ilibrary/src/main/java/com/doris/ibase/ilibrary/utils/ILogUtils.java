@@ -115,7 +115,7 @@ public abstract class ILogUtils {
             }
             FileOutputStream fos = null;
             try {
-                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg;
+                msg = DateFormat.getDateTimeInstance().format(new Date()) + "  " + msg;
                 if (getLogEncrypt()) {
                     msg = encode(msg) + "\r\n";
                 } else {
@@ -166,7 +166,7 @@ public abstract class ILogUtils {
             String msg = getExceptionInfo(throwable);
             FileOutputStream fos = null;
             try {
-                msg = DateFormat.getDateTimeInstance().format(new Date()) + "	" + msg;
+                msg = DateFormat.getDateTimeInstance().format(new Date()) + "  " + msg;
                 if (getLogEncrypt()) {
                     msg = encode(msg) + "\r\n";
                 } else {
@@ -215,7 +215,6 @@ public abstract class ILogUtils {
         }
         return result;
     }
-
 
     /**
      * 检查日志文件是否存在
