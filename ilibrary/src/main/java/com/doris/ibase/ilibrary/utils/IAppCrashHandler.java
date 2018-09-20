@@ -61,7 +61,7 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
-                logUtils.writeLog("程序崩溃！版本号:　" + pi.versionName);
+                logUtils.writeLog("程序崩溃！版本号: " + pi.versionName);
                 logUtils.writeLog(ex);
                 ex.printStackTrace();
             }
