@@ -1,10 +1,10 @@
-package com.doris.ibase.ilibrary.activities;
+package com.doris.ibase.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.doris.ibase.ilibrary.config.INumberConfig;
+import com.doris.ibase.config.INumberConfig;
 
 /**
  * @author Doris

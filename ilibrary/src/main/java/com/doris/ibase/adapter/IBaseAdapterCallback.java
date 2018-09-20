@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.adapter;
+package com.doris.ibase.adapter;
 
 /**
  * Created by Doris on 2018/3/4.

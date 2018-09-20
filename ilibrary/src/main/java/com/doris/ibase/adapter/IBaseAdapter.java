@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.adapter;
+package com.doris.ibase.adapter;
 
 import android.content.Context;
 import android.widget.BaseAdapter;

@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.adapter;
+package com.doris.ibase.adapter;
 
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.GridLayoutManager;

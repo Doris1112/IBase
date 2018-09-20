@@ -1,21 +1,23 @@
-package com.doris.ibase.ilibrary.fragments;
+package com.doris.ibase.fragments;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.doris.ibase.ilibrary.config.INumberConfig;
+import com.doris.ibase.config.INumberConfig;
 
 /**
- * Created by Doris on 2018/9/3.
+ * @author Doris.
+ * @date 2018/8/20.
  */
-public abstract class IBaseFragmentApp extends Fragment {
+
+public abstract class IBaseFragmentV4 extends Fragment {
 
     protected View mRoot;
     /**
@@ -150,5 +152,4 @@ public abstract class IBaseFragmentApp extends Fragment {
         lastClickTime = time;
         return false;
     }
-
 }

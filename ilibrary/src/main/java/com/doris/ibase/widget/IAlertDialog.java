@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.widget;
+package com.doris.ibase.widget;
 
 import android.app.Dialog;
 import android.content.Context;

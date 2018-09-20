@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.config;
+package com.doris.ibase.config;
 
 /**
  * Created by Doris on 2018/9/1.

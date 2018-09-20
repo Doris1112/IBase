@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.application;
+package com.doris.ibase.application;
 
 import android.content.Context;
 import android.os.Build;
@@ -6,8 +6,8 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import com.doris.ibase.ilibrary.utils.IAppCrashHandler;
-import com.doris.ibase.ilibrary.utils.ILogUtils;
+import com.doris.ibase.utils.IAppCrashHandler;
+import com.doris.ibase.utils.ILogUtils;
 
 /**
  * Created by Doris on 2018/1/25.

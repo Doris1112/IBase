@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.doris.ibase.ilibrary.widget.IAlertDialog;
+import com.doris.ibase.widget.IAlertDialog;
 
 public class MainActivity extends AppCompatActivity {
 

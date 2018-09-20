@@ -1,4 +1,4 @@
-package com.doris.ibase.ilibrary.activities;
+package com.doris.ibase.activities;
 
 import android.app.Activity;
 
