@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/i_alert_dialog"
+    android:layout_width="@dimen/dp290"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/i_bg_alert_dialog"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/dp10">
+
+        <TextView
+            android:id="@+id/i_tv_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/i_dialog_title"
+            android:textSize="@dimen/sp19"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/i_tv_dialog_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/dp10"
+            android:paddingTop="@dimen/dp10"
+            android:text="@string/i_dialog_content"
+            android:textSize="@dimen/sp16" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/lineHeight"
+        android:background="@color/i_default_bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp49"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/i_b_dialog_cancel"
+            style="@style/i_alert_dialog_btn"
+            android:background="@drawable/i_btn_alert_dialog_left"
+            android:text="@string/i_dialog_cancel"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/i_v_dialog_gap"
+            android:layout_width="@dimen/lineHeight"
+            android:layout_height="match_parent"
+            android:background="@color/i_default_bg"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/i_b_dialog_confirm"
+            style="@style/i_alert_dialog_btn"
+            android:background="@drawable/i_btn_alert_dialog_right"
+            android:text="@string/i_dialog_confirm" />
+
+    </LinearLayout>
+
+</LinearLayout>

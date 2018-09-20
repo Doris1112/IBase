@@ -3,17 +3,17 @@
     android:id="@+id/layout_toast_root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_toast"
+    android:background="@drawable/i_bg_toast"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/tv_toast"
+        android:id="@+id/i_tv_toast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="@dimen/dp3"
-        android:textColor="@android:color/white"
+        android:textColor="@color/i_white"
         android:textSize="@dimen/sp14" />
 
 </LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="i_transparent">#00000000</color>
+    <color name="i_white">#FFFFFF</color>
+    <color name="i_black">#000000</color>
+    <color name="i_red">#FF0000</color>
+    <color name="i_green">#00FF00</color>
+    <color name="i_blue">#0000FF</color>
+    <color name="i_yellow">#FFFF00</color>
+
+    <color name="i_default_bg">#F2F2F2</color>
+
+    <color name="i_gray_3">#333333</color>
+    <color name="i_gray_6">#666666</color>
+    <color name="i_gray_9">#999999</color>
+    <color name="i_gray_c">#CCCCCC</color>
+
+</resources>

@@ -123,8 +123,8 @@ public class IToastUtils {
             return;
         }
         Toast toast = new Toast(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.toast, null);
-        TextView textView = view.findViewById(R.id.tv_toast);
+        View view = LayoutInflater.from(context).inflate(R.layout.i_toast, null);
+        TextView textView = view.findViewById(R.id.i_tv_toast);
         textView.setText(text);
         toast.setView(view);
         toast.setGravity(Gravity.BOTTOM, 0, 200);
@@ -134,8 +134,8 @@ public class IToastUtils {
 
     public static void showToast(final Context context, final int gravity, final String text, final int time) {
         Toast toast = new Toast(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.toast, null);
-        TextView textView = view.findViewById(R.id.tv_toast);
+        View view = LayoutInflater.from(context).inflate(R.layout.i_toast, null);
+        TextView textView = view.findViewById(R.id.i_tv_toast);
         textView.setText(text);
         toast.setView(view);
         toast.setGravity(gravity, 0, 0);
@@ -153,9 +153,9 @@ public class IToastUtils {
      */
     private static void showBigToast(final Context context, final String text, int flagRes, final int time) {
         Toast toast = new Toast(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.toast_big, null);
-        TextView textView = view.findViewById(R.id.tv_toast);
-        ImageView imageView = view.findViewById(R.id.tv_toast_img);
+        View view = LayoutInflater.from(context).inflate(R.layout.i_toast_big, null);
+        TextView textView = view.findViewById(R.id.i_tv_toast);
+        ImageView imageView = view.findViewById(R.id.i_tv_toast_img);
         imageView.setImageResource(flagRes);
         textView.setText(text);
         toast.setView(view);
