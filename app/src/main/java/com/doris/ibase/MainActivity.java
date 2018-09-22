@@ -1,19 +1,17 @@
 package com.doris.ibase;
 
 import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.doris.ibase.activities.IBaseAppCompatActivity;
 import com.doris.ibase.widget.IAlertDialog;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends IBaseAppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int getContentLayoutId() {
+        return R.layout.activity_main;
     }
 
     public void onClick(View view) {
@@ -42,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
                         .setCancelTextColor(Color.parseColor("#ff4000"))
                         .setConfirmText("删除")
                         .show();
+                break;
+            case R.id.b_5:
+                startActivity(NextActivity.class);
                 break;
             default:
                 break;

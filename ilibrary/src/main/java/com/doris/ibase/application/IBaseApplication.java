@@ -6,7 +6,7 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import com.doris.ibase.utils.IAppCrashHandler;
+import com.doris.ibase.helper.IActivityLifeHelper;
 import com.doris.ibase.utils.ILogUtils;
 
 /**
@@ -22,6 +22,8 @@ public abstract class IBaseApplication extends MultiDexApplication {
             StrictMode.setVmPolicy(builder.build());
         }
         IAppCrashHandler.getInstance(getLogUtils()).init(getApplicationContext());
+
+        registerActivityLifecycleCallbacks(IActivityLifeHelper.instance());
     }
 
     @Override

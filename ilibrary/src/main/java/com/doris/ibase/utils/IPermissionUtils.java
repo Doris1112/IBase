@@ -13,7 +13,7 @@ import java.util.List;
 public class IPermissionUtils {
 
     /**
-     * 监测App是否已授予某些权限
+     * 检查App是否已授予某些权限
      * @param context
      * @param permissions
      * @return

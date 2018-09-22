@@ -1,8 +1,10 @@
-package com.doris.ibase.utils;
+package com.doris.ibase.application;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+
+import com.doris.ibase.utils.ILogUtils;
 
 /**
  * Created by Doris on 2018/8/29.
@@ -61,8 +63,10 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
-                logUtils.writeLog("程序崩溃！版本号: " + pi.versionName);
-                logUtils.writeLog(ex);
+                if (logUtils != null){
+                    logUtils.writeLog("程序崩溃！版本号: " + pi.versionName);
+                    logUtils.writeLog(ex);
+                }
                 ex.printStackTrace();
             }
         } catch (Exception e) {

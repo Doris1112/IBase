@@ -24,10 +24,10 @@ public abstract class ISharedPreferencesUtils {
     protected abstract Context getContext();
 
     /**
-     * 获取 SharedPreferences.Editor
+     * 获取 SharedPreferences
      * @return
      */
-    private SharedPreferences getSharedPreferences(){
+    public SharedPreferences getSharedPreferences(){
         return getContext().getSharedPreferences(getFileName(), Context.MODE_PRIVATE);
     }
 
@@ -35,7 +35,7 @@ public abstract class ISharedPreferencesUtils {
      * 获取 SharedPreferences.Editor
      * @return
      */
-    private SharedPreferences.Editor getEditor(){
+    public SharedPreferences.Editor getEditor(){
         return getSharedPreferences().edit();
     }
 
