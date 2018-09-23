@@ -37,8 +37,7 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
     private int mTitleTextColor = Color.BLACK, mContentTextColor = Color.DKGRAY,
             mCancelTextColor = Color.GRAY, mConfirmTextColor = Color.BLACK;
 
-    private OnDialogClickListener mCancelClickListener;
-    private OnDialogClickListener mConfirmClickListener;
+    private OnDialogClickListener mCancelClickListener, mConfirmClickListener;
     private boolean mCloseFromCancel;
     private int mAlertType = CANCEL_TYPE;
 
@@ -150,17 +149,14 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
             // 取消
             if (mCancelClickListener != null) {
                 mCancelClickListener.onClick(IAlertDialog.this);
-            } else {
-                dismissWithAnimation(false);
             }
         } else if (v.getId() == R.id.i_b_dialog_confirm) {
             // 确认
             if (mConfirmClickListener != null) {
                 mConfirmClickListener.onClick(IAlertDialog.this);
-            } else {
-                dismissWithAnimation(false);
             }
         }
+        dismissWithAnimation(false);
     }
 
     private void dismissWithAnimation(boolean fromCancel) {
