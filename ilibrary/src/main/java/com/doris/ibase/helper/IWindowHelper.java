@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.doris.ibase.utils.IDisplayUtils;
+
 /**
  * Created by Doris on 2018/9/22.
  */
@@ -39,10 +41,14 @@ public class IWindowHelper {
         return decorView.getChildAt(0);
     }
 
-    //获取屏幕宽度
+    /**
+     * 获取屏幕宽度
+     * @param context
+     * @return
+     */
     public int getScreenWidth(Context context) {
         if (mScreenWidth == 0) {
-            mScreenWidth = context.getResources().getDisplayMetrics().widthPixels;
+            mScreenWidth = IDisplayUtils.getScreenWidth(context);
         }
         return mScreenWidth;
     }

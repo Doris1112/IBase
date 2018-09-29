@@ -22,17 +22,17 @@ public abstract class IBaseRecyclerAdapter<Data>
     private final LinkedList<Data> mDataList;
     private final LinkedList<View> mHeaderList = new LinkedList<>();
     private final LinkedList<View> mFooterList = new LinkedList<>();
-    private AdapterListener<Data> mListener;
+    private IAdapterListener<Data> mListener;
 
     public IBaseRecyclerAdapter() {
         this(null);
     }
 
-    public IBaseRecyclerAdapter(AdapterListener<Data> listener) {
+    public IBaseRecyclerAdapter(IAdapterListener<Data> listener) {
         this(new LinkedList<Data>(), listener);
     }
 
-    public IBaseRecyclerAdapter(LinkedList<Data> dataList, AdapterListener<Data> listener) {
+    public IBaseRecyclerAdapter(LinkedList<Data> dataList, IAdapterListener<Data> listener) {
         this.mDataList = dataList;
         this.mListener = listener;
     }
@@ -299,7 +299,7 @@ public abstract class IBaseRecyclerAdapter<Data>
      *
      * @param listener
      */
-    public void setListener(AdapterListener<Data> listener) {
+    public void setIAdapterListener(IAdapterListener<Data> listener) {
         mListener = listener;
     }
 
@@ -308,7 +308,7 @@ public abstract class IBaseRecyclerAdapter<Data>
      *
      * @param <Data>
      */
-    public interface AdapterListener<Data> {
+    public interface IAdapterListener<Data> {
         // 当Cell点击时触发
         void onItemClick(IBaseRecyclerAdapter.ViewHolder<Data> holder, Data data);
 
