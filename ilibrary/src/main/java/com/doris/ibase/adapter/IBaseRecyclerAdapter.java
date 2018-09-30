@@ -243,14 +243,36 @@ public abstract class IBaseRecyclerAdapter<Data>
     }
 
     /**
+     * 替换指定数据
+     *
+     * @param data
+     */
+    public void replace(Data data) {
+        int position = mDataList.indexOf(data);
+        replace(position, data);
+    }
+
+    /**
      * 替换指定位置数据
      *
      * @param position
      * @param data
      */
     public void replace(int position, Data data) {
-        mDataList.set(position, data);
-        notifyItemChanged(position);
+        if (position >= 0 && position < mDataList.size()) {
+            mDataList.set(position, data);
+            notifyItemChanged(position);
+        }
+    }
+
+    /**
+     * 根据移除数据
+     *
+     * @param data
+     */
+    public void remove(Data data) {
+        int position = mDataList.indexOf(data);
+        removeAtIndex(position);
     }
 
     /**
@@ -259,8 +281,10 @@ public abstract class IBaseRecyclerAdapter<Data>
      * @param position
      */
     public void removeAtIndex(int position) {
-        mDataList.remove(position);
-        notifyItemRemoved(position);
+        if (position >= 0 && position < mDataList.size()) {
+            mDataList.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     @Override

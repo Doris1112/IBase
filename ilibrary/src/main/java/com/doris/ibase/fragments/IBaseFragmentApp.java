@@ -130,6 +130,17 @@ public abstract class IBaseFragmentApp extends Fragment {
     /**
      * 进入到下个activity
      */
+    protected void startActivityForResult(Class clz, int requestCode) {
+        if (isFastDoubleClick()) {
+            return;
+        }
+        Intent intent = new Intent(getActivity(), clz);
+        startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * 进入到下个activity
+     */
     protected void startActivity(Class clz, Bundle bundle) {
         if (isFastDoubleClick()) {
             return;
@@ -137,6 +148,18 @@ public abstract class IBaseFragmentApp extends Fragment {
         Intent intent = new Intent(getActivity(), clz);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    /**
+     * 进入到下个activity
+     */
+    protected void startActivityForResult(Class clz, Bundle bundle, int requestCode) {
+        if (isFastDoubleClick()) {
+            return;
+        }
+        Intent intent = new Intent(getActivity(), clz);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, requestCode);
     }
 
     /**

@@ -122,7 +122,7 @@ public abstract class ILogUtils {
                     msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
-                fos.write(msg.getBytes("GBK"));
+                fos.write(msg.getBytes("UTF-8"));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -173,7 +173,7 @@ public abstract class ILogUtils {
                     msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
-                fos.write(msg.getBytes("GBK"));
+                fos.write(msg.getBytes("UTF-8"));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
