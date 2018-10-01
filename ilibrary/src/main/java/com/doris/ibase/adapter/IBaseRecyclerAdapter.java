@@ -69,7 +69,7 @@ public abstract class IBaseRecyclerAdapter<Data>
     @Override
     public ViewHolder<Data> onCreateViewHolder(ViewGroup parent, int viewType) {
         try {
-            if (mHeaderList.size() > 0 && viewType > mHeaderList.size()) {
+            if (mHeaderList.size() > 0 && (viewType == 0 || viewType > mHeaderList.size())) {
                 // 头部
                 return new HeadHolder(mHeaderList.get(viewType));
             }
