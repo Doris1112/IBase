@@ -1,5 +1,6 @@
 package com.doris.ibase.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +18,7 @@ import java.util.LinkedList;
  * Created by Doris on 2018/10/28.
  */
 public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder>
-    implements View.OnClickListener, View.OnLongClickListener {
+        implements View.OnClickListener, View.OnLongClickListener {
 
     private LinkedList<Data> mDataList;
     private LinkedList<ItemView> mHeaderList = new LinkedList<>();
@@ -28,11 +29,17 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     private OnItemClickListener<Data> mItemClickListener;
     private OnItemLongClickListener<Data> mItemLongClickListener;
 
+    private Context mContext;
+
     public static abstract class ItemView {
         protected abstract View onCreateView(ViewGroup parent);
+
+        public void onBindView(View view) {
+        }
     }
 
-    public IBaseRecyclerAdapter() {
+    public IBaseRecyclerAdapter(Context context) {
+        this.mContext = context;
         mDataList = new LinkedList<>();
     }
 
@@ -52,10 +59,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         // 底部
         if (getFooterCount() > 0) {
             int index = position - getHeaderCount() - getCount();
-            if (index >= 0) {
+            if (index >= 0 && getFooterCount() > index) {
                 return mFooterList.get(index).hashCode();
             }
         }
+        // 数据内容
         return getContentItemViewType(position - getHeaderCount());
     }
 
@@ -76,31 +84,28 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     private View createHeaderOrFooterViewByType(ViewGroup parent, int viewType) {
         for (ItemView headerView : mHeaderList) {
             if (headerView.hashCode() == viewType) {
-                View view = headerView.onCreateView(parent);
-                StaggeredGridLayoutManager.LayoutParams layoutParams;
-                if (view.getLayoutParams() != null)
-                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(view.getLayoutParams());
-                else
-                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.setFullSpan(true);
-                view.setLayoutParams(layoutParams);
-                return view;
+                return getStateView(headerView.onCreateView(parent));
             }
         }
         for (ItemView footerView : mFooterList) {
             if (footerView.hashCode() == viewType) {
-                View view = footerView.onCreateView(parent);
-                StaggeredGridLayoutManager.LayoutParams layoutParams;
-                if (view.getLayoutParams() != null)
-                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(view.getLayoutParams());
-                else
-                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.setFullSpan(true);
-                view.setLayoutParams(layoutParams);
-                return view;
+                return getStateView(footerView.onCreateView(parent));
             }
         }
         return null;
+    }
+
+    private View getStateView(View view) {
+        StaggeredGridLayoutManager.LayoutParams layoutParams;
+        if (view.getLayoutParams() != null) {
+            layoutParams = new StaggeredGridLayoutManager.LayoutParams(view.getLayoutParams());
+        } else {
+            layoutParams = new StaggeredGridLayoutManager.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        layoutParams.setFullSpan(true);
+        view.setLayoutParams(layoutParams);
+        return view;
     }
 
     private IBaseViewHolder<Data> getViewHolder(ViewGroup parent, int viewType) {
@@ -120,15 +125,22 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         holder.itemView.setId(position);
         // 头部
         if (getHeaderCount() > 0 && position < getHeaderCount()) {
+            mHeaderList.get(position).onBindView(holder.itemView);
             return;
         }
         // 底部
         int index = position - getHeaderCount() - getCount();
-        if (getFooterCount() > 0 && index >= 0) {
+        if (index >= 0 && getFooterCount() > index) {
+            mFooterList.get(index).onBindView(holder.itemView);
             return;
         }
+        // 数据内容
         index = position - getHeaderCount();
         holder.bind(getItem(index), index);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     /**
@@ -438,11 +450,15 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         void onItemLongClick(IBaseViewHolder<Data> holder, Data data);
     }
 
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
     public GridSpanSizeLookup obtainGridSpanSizeLookUp(int maxCount) {
         return new GridSpanSizeLookup(maxCount);
     }
 
-    public class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+    private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
 
         private int mMaxCount;
 

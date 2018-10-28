@@ -68,7 +68,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new PoetryAdapter();
+        mAdapter = new PoetryAdapter(this);
         addHeader();
         addFooter();
         mAdapter.setOnItemClickListener(new IBaseRecyclerAdapter.OnItemClickListener<Poetry.ResultBean>() {
@@ -258,7 +258,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                                 }
                             });
                         }
-                        if (des != null){
+                        if (des != null) {
                             des.setText(author.getResult().get(0).getDesc());
                         }
                     }

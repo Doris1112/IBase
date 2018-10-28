@@ -7,6 +7,7 @@ import android.view.View;
 
 /**
  * Created by Doris on 2018/10/28.
+ *
  * @param <Data>
  */
 public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
@@ -17,7 +18,7 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public void bind(Data data, int position){
+    public void bind(Data data, int position) {
         mData = data;
         onBind(data, position);
     }

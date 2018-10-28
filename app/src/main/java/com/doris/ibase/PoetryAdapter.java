@@ -1,5 +1,6 @@
 package com.doris.ibase;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +12,10 @@ import com.doris.ibase.adapter.IBaseViewHolder;
  * Created by Doris on 2018/10/27.
  */
 public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
+
+    public PoetryAdapter(Context context) {
+        super(context);
+    }
 
     @Override
     public int getContentItemViewType(int position) {
