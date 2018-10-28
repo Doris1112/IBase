@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/Song"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="宋朝古诗词"
+            android:textColor="@color/i_gray_3"
+            android:textSize="@dimen/sp14" />
+
+        <View
+            android:layout_width="@dimen/lineHeight1"
+            android:layout_height="match_parent"
+            android:background="@color/i_default_bg" />
+
+        <TextView
+            android:id="@+id/Tang"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="唐朝古诗词"
+            android:textColor="@color/i_gray_3"
+            android:textSize="@dimen/sp14" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/lineHeight1"
+        android:background="@color/i_default_bg" />
+</LinearLayout>

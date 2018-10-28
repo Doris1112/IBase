@@ -1,127 +1,143 @@
 package com.doris.ibase.adapter;
 
-import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.doris.ibase.ilibrary.R;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Created by Doris on 2018/3/4.
+ * Created by Doris on 2018/10/28.
  */
-public abstract class IBaseRecyclerAdapter<Data>
-        extends RecyclerView.Adapter<IBaseRecyclerAdapter.ViewHolder<Data>>
-        implements View.OnClickListener, View.OnLongClickListener, IBaseAdapterCallback<Data> {
+public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder> {
 
-    private final LinkedList<Data> mDataList;
-    private final LinkedList<View> mHeaderList = new LinkedList<>();
-    private final LinkedList<View> mFooterList = new LinkedList<>();
-    private IAdapterListener<Data> mListener;
+    private LinkedList<Data> mDataList;
+    private LinkedList<ItemView> mHeaderList = new LinkedList<>();
+    private LinkedList<ItemView> mFooterList = new LinkedList<>();
+    private final Object mLock = new Object();
+    private boolean mNotifyOnChange = true;
+
+    private OnItemClickListener mItemClickListener;
+    private OnItemLongClickListener mItemLongClickListener;
+
+    public static abstract class ItemView {
+        protected abstract View onCreateView(ViewGroup parent);
+
+        public void onBindView(View headerView) {
+
+        }
+    }
 
     public IBaseRecyclerAdapter() {
-        this(null);
+        mDataList = new LinkedList<>();
     }
 
-    public IBaseRecyclerAdapter(IAdapterListener<Data> listener) {
-        this(new LinkedList<Data>(), listener);
-    }
-
-    public IBaseRecyclerAdapter(LinkedList<Data> dataList, IAdapterListener<Data> listener) {
-        this.mDataList = dataList;
-        this.mListener = listener;
-    }
-
-    /**
-     * 复写默认的布局类型返回
-     *
-     * @param position
-     * @return 其实返回的都是XML文件的ID
-     */
     @Override
-    public int getItemViewType(int position) {
-        try {
-            if ((mHeaderList.size() > 0 && position < mHeaderList.size()) ||
-                    (mFooterList.size() > 0 && position >= (mHeaderList.size() + mDataList.size()))) {
-                // 头部或底部
-                return position;
+    public final int getItemCount() {
+        return getHeaderCount() + getCount() + getFooterCount();
+    }
+
+    @Override
+    public final int getItemViewType(int position) {
+        // 头部
+        if (getHeaderCount() > 0) {
+            if (position < getHeaderCount()) {
+                return mHeaderList.get(position).hashCode();
             }
-            return getItemViewType(position, mDataList.get(position - mHeaderList.size()));
-        } catch (Exception e) {
-            // 以防下标越界，程序异常
-            return getItemViewType(position, null);
         }
-    }
-
-    @LayoutRes
-    protected abstract int getItemViewType(int position, Data data);
-
-    /**
-     * @param parent
-     * @param viewType 定为xml布局id
-     * @return
-     */
-    @Override
-    public ViewHolder<Data> onCreateViewHolder(ViewGroup parent, int viewType) {
-        try {
-            if (mHeaderList.size() > 0 && (viewType == 0 || viewType > mHeaderList.size())) {
-                // 头部
-                return new HeadHolder(mHeaderList.get(viewType));
+        // 底部
+        if (getFooterCount() > 0) {
+            int index = position - getHeaderCount() - getCount();
+            if (index >= 0) {
+                return mFooterList.get(index).hashCode();
             }
-            if (mFooterList.size() > 0 && viewType >= (mHeaderList.size() + mDataList.size())) {
-                // 底部
-                return new FootHolder(mFooterList.get(viewType - mHeaderList.size() - mDataList.size()));
+        }
+        return position - getHeaderCount();
+    }
+
+    @NonNull
+    @Override
+    public IBaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
+        // 头部或底部
+        View view = createHeaderOrFooterViewByType(parent, viewType);
+        if (view != null) {
+            return new HeaderOrFooterViewHolder(view);
+        }
+        // 数据内容
+        final IBaseViewHolder viewHolder = createViewHolder(parent, viewType,
+                mDataList.get(viewType));
+        if (mItemClickListener != null) {
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mItemClickListener.onItemClick(viewType, v);
+                }
+            });
+        }
+
+        if (mItemLongClickListener != null) {
+            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return mItemLongClickListener.onItemClick(viewType, v);
+                }
+            });
+        }
+        return viewHolder;
+    }
+
+    private View createHeaderOrFooterViewByType(ViewGroup parent, int viewType) {
+        for (ItemView headerView : mHeaderList) {
+            if (headerView.hashCode() == viewType) {
+                View view = headerView.onCreateView(parent);
+                StaggeredGridLayoutManager.LayoutParams layoutParams;
+                if (view.getLayoutParams() != null)
+                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(view.getLayoutParams());
+                else
+                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.setFullSpan(true);
+                view.setLayoutParams(layoutParams);
+                return view;
             }
-            return getViewHolder(parent, viewType);
-        } catch (Exception e) {
-            return getViewHolder(parent, viewType);
         }
+        for (ItemView footerView : mFooterList) {
+            if (footerView.hashCode() == viewType) {
+                View view = footerView.onCreateView(parent);
+                StaggeredGridLayoutManager.LayoutParams layoutParams;
+                if (view.getLayoutParams() != null)
+                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(view.getLayoutParams());
+                else
+                    layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.setFullSpan(true);
+                view.setLayoutParams(layoutParams);
+                return view;
+            }
+        }
+        return null;
     }
 
-    private ViewHolder<Data> getViewHolder(ViewGroup parent, int viewType) {
-        // 得到LayoutInflater用于把XML初始化未View
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        // 把XML ID为viewType的文件初始化为一个root view
-        View root = inflater.inflate(viewType, null, false);
-        // 通过子类必须实现的方法，得到一个ViewHolder
-        ViewHolder<Data> holder = onCreateViewHolder(root, viewType);
-        // 设置View的tag为ViewHolder，进行双向绑定
-        root.setTag(R.id.tag_recycler_holder, holder);
-        // 设置事件点击
-        root.setOnClickListener(this);
-        root.setOnLongClickListener(this);
-        // 绑定callback
-        holder.callback = this;
-        return holder;
-    }
-
-    protected abstract ViewHolder<Data> onCreateViewHolder(View root, int viewType);
+    public abstract IBaseViewHolder<Data> createViewHolder(ViewGroup parent, int viewType, Data data);
 
     @Override
-    public void onBindViewHolder(ViewHolder<Data> holder, int position) {
-        try {
-            // 得到需要绑定的数据
-            Data data = mDataList.get(position);
-            // 触发holder的绑定方法
-            holder.bind(data);
-        } catch (Exception e) {
-            // 以防下标越界，程序异常
-            holder.bind(null);
+    public void onBindViewHolder(@NonNull IBaseViewHolder holder, int position) {
+        holder.itemView.setId(position);
+        // 头部
+        if (getHeaderCount() > 0 && position < getHeaderCount()) {
+            mHeaderList.get(position).onBindView(holder.itemView);
+            return;
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mHeaderList.size() + mDataList.size() + mFooterList.size();
-    }
-
-    public LinkedList<View> getHeaderList() {
-        return mHeaderList;
+        // 底部
+        int index = position - getHeaderCount() - getCount();
+        if (getFooterCount() > 0 && index >= 0) {
+            mFooterList.get(index).onBindView(holder.itemView);
+            return;
+        }
+        index = position - getHeaderCount();
+        holder.onBind(getItem(index), index);
     }
 
     /**
@@ -129,39 +145,11 @@ public abstract class IBaseRecyclerAdapter<Data>
      *
      * @param view
      */
-    public void addHeader(View view) {
+    public void addHeader(ItemView view) {
         if (view != null) {
             mHeaderList.add(view);
-            notifyItemChanged(mHeaderList.size() - 1);
+            notifyItemInserted(getHeaderCount() - 1);
         }
-    }
-
-    /**
-     * 移除头部
-     *
-     * @param view
-     */
-    public void removeHeader(View view) {
-        if (view != null && mHeaderList.size() > 0) {
-            int position = mHeaderList.indexOf(view);
-            mHeaderList.remove(view);
-            notifyItemRemoved(position);
-        }
-    }
-
-    /**
-     * 清空头部
-     */
-    public void removeAllHeader() {
-        int count = mHeaderList.size();
-        if (count > 0) {
-            mHeaderList.clear();
-            notifyItemRangeRemoved(0, count);
-        }
-    }
-
-    public LinkedList<View> getFooterList() {
-        return mFooterList;
     }
 
     /**
@@ -169,175 +157,261 @@ public abstract class IBaseRecyclerAdapter<Data>
      *
      * @param view
      */
-    public void addFooter(View view) {
+    public void addFooter(ItemView view) {
         if (view != null) {
             mFooterList.add(view);
-            notifyItemChanged(mHeaderList.size() + mDataList.size() + mFooterList.size() - 1);
+            notifyItemInserted(getHeaderCount() + getCount() + getFooterCount() - 1);
         }
     }
 
     /**
-     * 移除底部
-     *
-     * @param view
+     * 清空所有头部
      */
-    public void removeFooter(View view) {
-        if (view != null && mFooterList.size() > 0) {
-            int position = mHeaderList.size() + mDataList.size() + mFooterList.indexOf(view);
-            mFooterList.remove(view);
-            notifyItemRemoved(position);
+    public void removeAllHeader() {
+        int count = getHeaderCount();
+        if (count > 0) {
+            mHeaderList.clear();
+            notifyItemRangeRemoved(0, count);
         }
     }
 
     /**
-     * 清空底部
+     * 清空所有底部
      */
     public void removeAllFooter() {
-        int count = mFooterList.size();
+        int count = getFooterCount();
         if (count > 0) {
             mFooterList.clear();
-            notifyItemRangeRemoved(mFooterList.size() + mDataList.size(), count);
+            notifyItemRangeRemoved(getHeaderCount() + getCount(), count);
         }
     }
 
+    /**
+     * 根据下标获取头部
+     *
+     * @param index
+     * @return
+     */
+    public ItemView getHeader(int index) {
+        if (index >= 0 && getHeaderCount() > index) {
+            return mHeaderList.get(index);
+        }
+        return null;
+    }
+
+    /**
+     * 根据下标获取底部
+     *
+     * @param index
+     * @return
+     */
+    public ItemView getFooter(int index) {
+        if (index >= 0 && getFooterCount() > index){
+            return mFooterList.get(index);
+        }
+        return null;
+    }
+
+    /**
+     * 获取头部集合大小
+     * @return
+     */
+    public int getHeaderCount() {
+        return mHeaderList.size();
+    }
+
+    /**
+     * 获取底部集合大小
+     * @return
+     */
+    public int getFooterCount() {
+        return mFooterList.size();
+    }
+
+    /**
+     * 获取头部集合
+     * @return
+     */
+    public LinkedList<ItemView> getHeaders(){
+        return mHeaderList;
+    }
+
+    /**
+     * 获取底部集合
+     * @return
+     */
+    public LinkedList<ItemView> getFooters(){
+        return mFooterList;
+    }
+
+    /**
+     * 移除指定头部数据
+     * @param view
+     */
+    public void removeHeader(ItemView view) {
+        removeHeader(mHeaderList.indexOf(view));
+    }
+
+    /**
+     * 移除指定底部数据
+     * @param view
+     */
+    public void removeFooter(ItemView view) {
+        removeFooter(mFooterList.indexOf(view));
+    }
+
+    /**
+     * 根据下标移除头部数据
+     * @param index
+     */
+    public void removeHeader(int index){
+        if (index >= 0 && getHeaderCount() > index){
+            mHeaderList.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
+    /**
+     * 根据下标移除底部数据
+     * @param index
+     */
+    public void removeFooter(int index){
+        if (index >= 0 && getFooterCount() > index){
+            mFooterList.remove(index);
+            notifyItemRemoved(getHeaderCount() + getCount() + index);
+        }
+    }
+
+    /**
+     * 获取数据集合
+     * @return
+     */
     public LinkedList<Data> getDataList() {
         return mDataList;
     }
 
     /**
-     * 添加一条数据并通知添加
+     * 获取数据大小
      *
+     * @return
+     */
+    public int getCount() {
+        return mDataList.size();
+    }
+
+    /**
+     * 根据下标获取数据
+     * @param index
+     * @return
+     */
+    public Data getItem(int index) {
+        if (index >=0 && getCount() > index){
+            return mDataList.get(index);
+        }
+        return null;
+    }
+
+    /**
+     * 添加一条数据
      * @param data
      */
     public void add(Data data) {
         if (data != null) {
-            mDataList.add(data);
-            notifyItemInserted(mHeaderList.size() + mDataList.size() - 1);
+            synchronized (mLock) {
+                mDataList.add(data);
+            }
+        }
+        if (mNotifyOnChange) {
+            notifyItemInserted(getHeaderCount() + getCount() + 1);
         }
     }
 
     /**
-     * 添加一堆数据并通知这段集合更新
-     *
+     * 添加多条数据
      * @param dataList
      */
-    public void add(Collection<Data> dataList) {
+    public void add(Collection<? extends Data> dataList) {
         if (dataList != null && dataList.size() > 0) {
-            int startPos = mHeaderList.size() + mDataList.size();
-            mDataList.addAll(dataList);
-            notifyItemRangeInserted(startPos, dataList.size());
+            synchronized (mLock) {
+                mDataList.addAll(dataList);
+            }
+            if (mNotifyOnChange){
+                notifyItemRangeInserted(
+                        getHeaderCount() + getCount() - dataList.size() + 1,
+                        dataList.size());
+            }
         }
+
     }
 
     /**
-     * 替换为一个新的集合，其中包括了清空
-     *
-     * @param dataList
-     */
-    public void replace(Collection<Data> dataList) {
-        mDataList.clear();
-        if (dataList != null && dataList.size() > 0) {
-            mDataList.addAll(dataList);
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * 替换指定数据
-     *
-     * @param data
-     */
-    public void replace(Data data) {
-        int position = mDataList.indexOf(data);
-        replace(position, data);
-    }
-
-    /**
-     * 替换指定位置数据
-     *
-     * @param position
-     * @param data
-     */
-    public void replace(int position, Data data) {
-        if (position >= 0 && position < mDataList.size()) {
-            mDataList.set(position, data);
-            notifyItemChanged(position);
-        }
-    }
-
-    /**
-     * 根据移除数据
-     *
+     * 移除一条数据
      * @param data
      */
     public void remove(Data data) {
-        int position = mDataList.indexOf(data);
-        removeAtIndex(position);
+        if (data != null){
+            int position = mDataList.indexOf(data);
+            remove(position);
+        }
     }
 
     /**
-     * 根据下标移除数据
-     *
+     * 根据下标移除一条数据
      * @param position
      */
-    public void removeAtIndex(int position) {
-        if (position >= 0 && position < mDataList.size()) {
-            mDataList.remove(position);
-            notifyItemRemoved(position);
+    public void remove(int position) {
+        if (position >= 0 && getCount() > position){
+            synchronized (mLock){
+                mDataList.remove(position);
+            }
+            if (mNotifyOnChange) {
+                notifyItemRemoved(getHeaderCount() + position);
+            }
         }
-    }
-
-    @Override
-    public void update(Data data, ViewHolder<Data> holder) {
-        // 得到当前ViewHolder的坐标
-        int pos = holder.getAdapterPosition();
-        if (pos >= 0) {
-            // 进行数据的移除与更新
-            mDataList.remove(pos);
-            mDataList.add(pos, data);
-            // 通知这个坐标下的数据有更新
-            notifyItemChanged(pos);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        ViewHolder<Data> viewHolder = (ViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
-        if (mListener != null) {
-            mListener.onItemClick(viewHolder, viewHolder.mData);
-        }
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        ViewHolder<Data> viewHolder = (ViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
-        if (mListener != null) {
-            mListener.onItemLongClick(viewHolder, viewHolder.mData);
-            return true;
-        }
-        return false;
     }
 
     /**
-     * 设置适配器监听
-     *
-     * @param listener
+     * 清空数据
      */
-    public void setIAdapterListener(IAdapterListener<Data> listener) {
-        mListener = listener;
+    public void clear() {
+        int count = getCount();
+        synchronized (mLock) {
+            mDataList.clear();
+        }
+        if (mNotifyOnChange) {
+            notifyItemRangeRemoved(getHeaderCount(), count);
+        }
     }
 
     /**
-     * 自定义监听器
-     *
-     * @param <Data>
+     *  设置是否需要刷新
+     * @param notifyOnChange
      */
-    public interface IAdapterListener<Data> {
-        // 当Cell点击时触发
-        void onItemClick(IBaseRecyclerAdapter.ViewHolder<Data> holder, Data data);
+    public void setNotifyOnChange(boolean notifyOnChange) {
+        mNotifyOnChange = notifyOnChange;
+    }
 
-        // 当Cell长按时触发
-        void onItemLongClick(IBaseRecyclerAdapter.ViewHolder<Data> holder, Data data);
+    private class HeaderOrFooterViewHolder extends IBaseViewHolder {
+
+        HeaderOrFooterViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, View v);
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.mItemLongClickListener = listener;
+    }
+
+    public interface OnItemLongClickListener {
+        boolean onItemClick(int position, View v);
     }
 
     public GridSpanSizeLookup obtainGridSpanSizeLookUp(int maxCount) {
@@ -345,6 +419,7 @@ public abstract class IBaseRecyclerAdapter<Data>
     }
 
     public class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+
         private int mMaxCount;
 
         public GridSpanSizeLookup(int maxCount) {
@@ -353,11 +428,11 @@ public abstract class IBaseRecyclerAdapter<Data>
 
         @Override
         public int getSpanSize(int position) {
-            if (mHeaderList.size() > 0) {
-                if (position < mHeaderList.size()) return mMaxCount;
+            if (getHeaderCount() > 0) {
+                if (position < getHeaderCount()) return mMaxCount;
             }
-            if (mFooterList.size() > 0) {
-                int i = position - mHeaderList.size() - mDataList.size();
+            if (getFooterCount() > 0) {
+                int i = position - getHeaderCount() - getCount();
                 if (i >= 0) {
                     return mMaxCount;
                 }
@@ -366,76 +441,4 @@ public abstract class IBaseRecyclerAdapter<Data>
         }
     }
 
-    /**
-     * 自定义ViewHolder
-     *
-     * @param <Data>
-     */
-    public static abstract class ViewHolder<Data> extends RecyclerView.ViewHolder {
-
-        private IBaseAdapterCallback<Data> callback;
-        private Data mData;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-        }
-
-        /**
-         * 用于绑定数据的触发
-         *
-         * @param data
-         */
-        void bind(Data data) {
-            mData = data;
-            onBind(data);
-        }
-
-        /**
-         * 当触发绑定数据的时候的回调，必须复写
-         *
-         * @param data
-         */
-        protected abstract void onBind(Data data);
-
-        /**
-         * Holder自己对自己对应的Data进行更新操作
-         *
-         * @param data
-         */
-        public void updateData(Data data) {
-            if (callback != null) {
-                callback.update(data, this);
-            }
-        }
-    }
-
-    /**
-     * 头部holder
-     */
-    public static class HeadHolder extends ViewHolder {
-
-        public HeadHolder(View itemView) {
-            super(itemView);
-        }
-
-        @Override
-        protected void onBind(Object o) {
-
-        }
-    }
-
-    /**
-     * 底部holder
-     */
-    public static class FootHolder extends ViewHolder {
-
-        public FootHolder(View itemView) {
-            super(itemView);
-        }
-
-        @Override
-        protected void onBind(Object o) {
-
-        }
-    }
 }
