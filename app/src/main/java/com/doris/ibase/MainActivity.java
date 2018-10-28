@@ -1,8 +1,6 @@
 package com.doris.ibase;
 
-import android.Manifest;
 import android.graphics.Color;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,9 +17,6 @@ public class MainActivity extends IBaseAppCompatActivity {
     @Override
     protected void initData() {
         super.initData();
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE}, 1001);
     }
 
     public void onClick(View view) {

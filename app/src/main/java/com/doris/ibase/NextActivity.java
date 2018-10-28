@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.doris.ibase.activities.IBaseAppCompatActivity;
 import com.doris.ibase.adapter.IBaseRecyclerAdapter;
+import com.doris.ibase.adapter.IBaseViewHolder;
+import com.doris.ibase.utils.IToastUtils;
 
 import java.io.IOException;
 
@@ -69,6 +71,20 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
         mAdapter = new PoetryAdapter();
         addHeader();
         addFooter();
+        mAdapter.setOnItemClickListener(new IBaseRecyclerAdapter.OnItemClickListener<Poetry.ResultBean>() {
+            @Override
+            public void onItemClick(IBaseViewHolder<Poetry.ResultBean> holder, Poetry.ResultBean resultBean) {
+                IToastUtils.showToastCenter(NextActivity.this,
+                        resultBean.getTitle());
+            }
+        });
+        mAdapter.setOnItemLongClickListener(new IBaseRecyclerAdapter.OnItemLongClickListener<Poetry.ResultBean>() {
+            @Override
+            public void onItemLongClick(IBaseViewHolder<Poetry.ResultBean> holder, Poetry.ResultBean resultBean) {
+                IToastUtils.showToastCenter(NextActivity.this,
+                        resultBean.getAuthors());
+            }
+        });
         recyclerView.setAdapter(mAdapter);
     }
 

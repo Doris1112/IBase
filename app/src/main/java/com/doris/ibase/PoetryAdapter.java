@@ -1,7 +1,6 @@
 package com.doris.ibase;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,8 +13,13 @@ import com.doris.ibase.adapter.IBaseViewHolder;
 public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
 
     @Override
-    public IBaseViewHolder<Poetry.ResultBean> createViewHolder(ViewGroup parent, int viewType, Poetry.ResultBean resultBean) {
-        return new Holder(parent);
+    public int getContentItemViewType(int position) {
+        return R.layout.item_poetry;
+    }
+
+    @Override
+    public IBaseViewHolder<Poetry.ResultBean> createContentViewHolder(View root) {
+        return new Holder(root);
     }
 
     private class Holder extends IBaseViewHolder<Poetry.ResultBean> {
@@ -23,8 +27,8 @@ public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
         private ImageView close;
         private TextView title, authors, content;
 
-        Holder(ViewGroup parent) {
-            super(parent, R.layout.item_poetry);
+        Holder(View itemView) {
+            super(itemView);
             close = $(R.id.close);
             title = $(R.id.title);
             authors = $(R.id.authors);

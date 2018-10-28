@@ -2,11 +2,8 @@ package com.doris.ibase.adapter;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * Created by Doris on 2018/10/28.
@@ -14,12 +11,15 @@ import android.view.ViewGroup;
  */
 public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
+    private Data mData;
+
     public IBaseViewHolder(View itemView) {
         super(itemView);
     }
 
-    public IBaseViewHolder(ViewGroup parent, @LayoutRes int res) {
-        super(LayoutInflater.from(parent.getContext()).inflate(res, parent, false));
+    public void bind(Data data, int position){
+        mData = data;
+        onBind(data, position);
     }
 
     public void onBind(Data data, int position) {
@@ -34,4 +34,7 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
         return itemView.getContext();
     }
 
+    public Data getData() {
+        return mData;
+    }
 }

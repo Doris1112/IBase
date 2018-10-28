@@ -4,8 +4,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.doris.ibase.ilibrary.R;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,7 +16,8 @@ import java.util.LinkedList;
 /**
  * Created by Doris on 2018/10/28.
  */
-public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder> {
+public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder>
+    implements View.OnClickListener, View.OnLongClickListener {
 
     private LinkedList<Data> mDataList;
     private LinkedList<ItemView> mHeaderList = new LinkedList<>();
@@ -21,15 +25,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     private final Object mLock = new Object();
     private boolean mNotifyOnChange = true;
 
-    private OnItemClickListener mItemClickListener;
-    private OnItemLongClickListener mItemLongClickListener;
+    private OnItemClickListener<Data> mItemClickListener;
+    private OnItemLongClickListener<Data> mItemLongClickListener;
 
     public static abstract class ItemView {
         protected abstract View onCreateView(ViewGroup parent);
-
-        public void onBindView(View headerView) {
-
-        }
     }
 
     public IBaseRecyclerAdapter() {
@@ -56,38 +56,21 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
                 return mFooterList.get(index).hashCode();
             }
         }
-        return position - getHeaderCount();
+        return getContentItemViewType(position - getHeaderCount());
     }
+
+    public abstract int getContentItemViewType(int position);
 
     @NonNull
     @Override
-    public IBaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
+    public final IBaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
         // 头部或底部
         View view = createHeaderOrFooterViewByType(parent, viewType);
         if (view != null) {
             return new HeaderOrFooterViewHolder(view);
         }
         // 数据内容
-        final IBaseViewHolder viewHolder = createViewHolder(parent, viewType,
-                mDataList.get(viewType));
-        if (mItemClickListener != null) {
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mItemClickListener.onItemClick(viewType, v);
-                }
-            });
-        }
-
-        if (mItemLongClickListener != null) {
-            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return mItemLongClickListener.onItemClick(viewType, v);
-                }
-            });
-        }
-        return viewHolder;
+        return getViewHolder(parent, viewType);
     }
 
     private View createHeaderOrFooterViewByType(ViewGroup parent, int viewType) {
@@ -120,24 +103,32 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         return null;
     }
 
-    public abstract IBaseViewHolder<Data> createViewHolder(ViewGroup parent, int viewType, Data data);
+    private IBaseViewHolder<Data> getViewHolder(ViewGroup parent, int viewType) {
+        View root = LayoutInflater.from(parent.getContext())
+                .inflate(viewType, parent, false);
+        IBaseViewHolder<Data> holder = createContentViewHolder(root);
+        root.setTag(R.id.tag_recycler_holder, holder);
+        root.setOnClickListener(this);
+        root.setOnLongClickListener(this);
+        return holder;
+    }
+
+    public abstract IBaseViewHolder<Data> createContentViewHolder(View root);
 
     @Override
-    public void onBindViewHolder(@NonNull IBaseViewHolder holder, int position) {
+    public final void onBindViewHolder(@NonNull IBaseViewHolder holder, int position) {
         holder.itemView.setId(position);
         // 头部
         if (getHeaderCount() > 0 && position < getHeaderCount()) {
-            mHeaderList.get(position).onBindView(holder.itemView);
             return;
         }
         // 底部
         int index = position - getHeaderCount() - getCount();
         if (getFooterCount() > 0 && index >= 0) {
-            mFooterList.get(index).onBindView(holder.itemView);
             return;
         }
         index = position - getHeaderCount();
-        holder.onBind(getItem(index), index);
+        holder.bind(getItem(index), index);
     }
 
     /**
@@ -206,7 +197,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
      * @return
      */
     public ItemView getFooter(int index) {
-        if (index >= 0 && getFooterCount() > index){
+        if (index >= 0 && getFooterCount() > index) {
             return mFooterList.get(index);
         }
         return null;
@@ -214,6 +205,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取头部集合大小
+     *
      * @return
      */
     public int getHeaderCount() {
@@ -222,6 +214,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取底部集合大小
+     *
      * @return
      */
     public int getFooterCount() {
@@ -230,22 +223,25 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取头部集合
+     *
      * @return
      */
-    public LinkedList<ItemView> getHeaders(){
+    public LinkedList<ItemView> getHeaders() {
         return mHeaderList;
     }
 
     /**
      * 获取底部集合
+     *
      * @return
      */
-    public LinkedList<ItemView> getFooters(){
+    public LinkedList<ItemView> getFooters() {
         return mFooterList;
     }
 
     /**
      * 移除指定头部数据
+     *
      * @param view
      */
     public void removeHeader(ItemView view) {
@@ -254,6 +250,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 移除指定底部数据
+     *
      * @param view
      */
     public void removeFooter(ItemView view) {
@@ -262,10 +259,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除头部数据
+     *
      * @param index
      */
-    public void removeHeader(int index){
-        if (index >= 0 && getHeaderCount() > index){
+    public void removeHeader(int index) {
+        if (index >= 0 && getHeaderCount() > index) {
             mHeaderList.remove(index);
             notifyItemRemoved(index);
         }
@@ -273,10 +271,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除底部数据
+     *
      * @param index
      */
-    public void removeFooter(int index){
-        if (index >= 0 && getFooterCount() > index){
+    public void removeFooter(int index) {
+        if (index >= 0 && getFooterCount() > index) {
             mFooterList.remove(index);
             notifyItemRemoved(getHeaderCount() + getCount() + index);
         }
@@ -284,6 +283,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取数据集合
+     *
      * @return
      */
     public LinkedList<Data> getDataList() {
@@ -301,11 +301,12 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标获取数据
+     *
      * @param index
      * @return
      */
     public Data getItem(int index) {
-        if (index >=0 && getCount() > index){
+        if (index >= 0 && getCount() > index) {
             return mDataList.get(index);
         }
         return null;
@@ -313,6 +314,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 添加一条数据
+     *
      * @param data
      */
     public void add(Data data) {
@@ -328,6 +330,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 添加多条数据
+     *
      * @param dataList
      */
     public void add(Collection<? extends Data> dataList) {
@@ -335,7 +338,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
             synchronized (mLock) {
                 mDataList.addAll(dataList);
             }
-            if (mNotifyOnChange){
+            if (mNotifyOnChange) {
                 notifyItemRangeInserted(
                         getHeaderCount() + getCount() - dataList.size() + 1,
                         dataList.size());
@@ -346,10 +349,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 移除一条数据
+     *
      * @param data
      */
     public void remove(Data data) {
-        if (data != null){
+        if (data != null) {
             int position = mDataList.indexOf(data);
             remove(position);
         }
@@ -357,11 +361,12 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除一条数据
+     *
      * @param position
      */
     public void remove(int position) {
-        if (position >= 0 && getCount() > position){
-            synchronized (mLock){
+        if (position >= 0 && getCount() > position) {
+            synchronized (mLock) {
                 mDataList.remove(position);
             }
             if (mNotifyOnChange) {
@@ -384,7 +389,8 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     }
 
     /**
-     *  设置是否需要刷新
+     * 设置是否需要刷新
+     *
      * @param notifyOnChange
      */
     public void setNotifyOnChange(boolean notifyOnChange) {
@@ -398,20 +404,38 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         }
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    @Override
+    public void onClick(View v) {
+        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
+        if (mItemClickListener != null) {
+            mItemClickListener.onItemClick(viewHolder, viewHolder.getData());
+        }
+    }
+
+    public void setOnItemClickListener(OnItemClickListener<Data> listener) {
         this.mItemClickListener = listener;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position, View v);
+    public interface OnItemClickListener<Data> {
+        void onItemClick(IBaseViewHolder<Data> holder, Data data);
     }
 
-    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+    @Override
+    public boolean onLongClick(View v) {
+        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
+        if (mItemLongClickListener != null) {
+            mItemLongClickListener.onItemLongClick(viewHolder, viewHolder.getData());
+            return true;
+        }
+        return false;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener<Data> listener) {
         this.mItemLongClickListener = listener;
     }
 
-    public interface OnItemLongClickListener {
-        boolean onItemClick(int position, View v);
+    public interface OnItemLongClickListener<Data> {
+        void onItemLongClick(IBaseViewHolder<Data> holder, Data data);
     }
 
     public GridSpanSizeLookup obtainGridSpanSizeLookUp(int maxCount) {
