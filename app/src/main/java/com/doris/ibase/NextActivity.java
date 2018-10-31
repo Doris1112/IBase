@@ -26,7 +26,8 @@ import retrofit2.Retrofit;
 /**
  * Created by Doris on 2018/9/22.
  */
-public class NextActivity extends IBaseAppCompatActivity implements View.OnClickListener {
+public class NextActivity extends IBaseAppCompatActivity implements View.OnClickListener,
+        IBaseRecyclerAdapter.OnLoadMoreListener {
 
     private static final String TAG = NextActivity.class.getSimpleName();
 
@@ -52,6 +53,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                Log.d(TAG, "onRefresh: ");
                 mAdapter.removeAllHeader();
                 mAdapter.removeAllFooter();
                 isRefresh = true;
@@ -85,6 +87,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                         resultBean.getAuthors());
             }
         });
+        mAdapter.needLoadMore(true, recyclerView, this);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -173,15 +176,17 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        isRefresh = true;
-        page = 1;
         refreshLayout.setRefreshing(true);
         switch (v.getId()) {
             case R.id.Song:
+                isRefresh = true;
+                page = 1;
                 type = "宋";
                 poetryService.getSonyPoetry(page, count).enqueue(callback);
                 break;
             case R.id.Tang:
+                isRefresh = true;
+                page = 1;
                 type = "唐";
                 poetryService.getTangPoetry(page, count).enqueue(callback);
                 break;
@@ -203,6 +208,20 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
         page = 1;
         refreshLayout.setRefreshing(true);
         poetryService.getSonyPoetry(page, count).enqueue(callback);
+    }
+
+    @Override
+    public void onLoadMore() {
+        Log.d(TAG, "onLoadMore: ");
+        isRefresh = false;
+        page++;
+        if (page == 3) {
+            mAdapter.loadMoreError();
+        } else if (page > 3) {
+            mAdapter.loadMoreStop();
+        } else {
+            poetryService.getSonyPoetry(page, count).enqueue(callback);
+        }
     }
 
     private Callback<ResponseBody> callback = new Callback<ResponseBody>() {
