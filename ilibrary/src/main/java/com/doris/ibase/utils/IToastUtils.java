@@ -39,7 +39,7 @@ public class IToastUtils {
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
-                showToast(context, context.getResources().getString(resId), TOAST_DEFAULT_TIME);
+                showToast(context, context.getString(resId), TOAST_DEFAULT_TIME);
             }
         });
     }
@@ -73,7 +73,7 @@ public class IToastUtils {
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
-                showToast(context, gravity, context.getResources().getString(resId), TOAST_DEFAULT_TIME);
+                showToast(context, gravity, context.getString(resId), TOAST_DEFAULT_TIME);
             }
         });
     }

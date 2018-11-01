@@ -3,13 +3,13 @@
     <!-- 状态栏高度 -->
     <dimen name="statusBarSize">@dimen/dp25</dimen>
     <!-- 标题栏高度 -->
-    <dimen name="actionBar">@dimen/dp35</dimen>
+    <dimen name="actionBar">@dimen/dp45</dimen>
     <!-- 状态栏和标题栏高度 -->
-    <dimen name="actionBarWithStatusBarSize">@dimen/dp60</dimen>
+    <dimen name="actionBarWithStatusBarSize">@dimen/dp70</dimen>
     <!-- 底部导航栏高度 -->
     <dimen name="BottomNavigationHeight">@dimen/dp52</dimen>
     <!-- 线条高度 -->
-    <dimen name="lineHeight">0.5dp</dimen>
+    <dimen name="lineHeight">@dimen/dp0_5</dimen>
     <dimen name="lineHeight1">@dimen/dp1</dimen>
 
     <dimen name="sp0">0sp</dimen>
@@ -53,8 +53,29 @@
     <dimen name="sp38">38sp</dimen>
     <dimen name="sp39">39sp</dimen>
     <dimen name="sp40">40sp</dimen>
+    <dimen name="sp41">41sp</dimen>
+    <dimen name="sp42">42sp</dimen>
+    <dimen name="sp43">43sp</dimen>
+    <dimen name="sp44">44sp</dimen>
+    <dimen name="sp45">45sp</dimen>
+    <dimen name="sp46">46sp</dimen>
+    <dimen name="sp47">47sp</dimen>
+    <dimen name="sp48">48sp</dimen>
+    <dimen name="sp49">49sp</dimen>
+    <dimen name="sp50">50sp</dimen>
+    <dimen name="sp51">51sp</dimen>
+    <dimen name="sp52">52sp</dimen>
+    <dimen name="sp53">53sp</dimen>
+    <dimen name="sp54">54sp</dimen>
+    <dimen name="sp55">55sp</dimen>
+    <dimen name="sp56">56sp</dimen>
+    <dimen name="sp57">57sp</dimen>
+    <dimen name="sp58">58sp</dimen>
+    <dimen name="sp59">59sp</dimen>
+    <dimen name="sp60">60sp</dimen>
 
     <dimen name="dp0">0dp</dimen>
+    <dimen name="dp0_5">0.5dp</dimen>
     <dimen name="dp1">1dp</dimen>
     <dimen name="dp2">2dp</dimen>
     <dimen name="dp3">3dp</dimen>

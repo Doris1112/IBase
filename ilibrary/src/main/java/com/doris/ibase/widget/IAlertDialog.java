@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -38,7 +39,7 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
             mCancelTextColor = Color.GRAY, mConfirmTextColor = Color.BLACK;
 
     private OnDialogClickListener mCancelClickListener, mConfirmClickListener;
-    private boolean mCloseFromCancel;
+    private boolean mCloseFromCancel, mCancelable = true;
     private int mAlertType = CANCEL_TYPE;
 
     public IAlertDialog(@NonNull Context context) {
@@ -47,7 +48,6 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
 
     public IAlertDialog(Context context, int alertType) {
         super(context, R.style.i_alert_dialog);
-        setCancelable(true);
         setCanceledOnTouchOutside(false);
 
         mAlertType = alertType;
@@ -119,6 +119,8 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
                 break;
         }
 
+        setCancelable(mCancelable);
+
         mCancel.setOnClickListener(this);
         mConfirm.setOnClickListener(this);
 
@@ -165,15 +167,50 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         mDialogView.startAnimation(mDialogOutAnim);
     }
 
+    /**
+     * 点击返回键是否取消对话框
+     * @param cancelable 是否取消对话框
+     * @return IAlertDialog
+     */
+    public IAlertDialog setOnBackClickCancelable(boolean cancelable){
+        mCancelable = cancelable;
+        setCancelable(mCancelable);
+        return this;
+    }
+
+    /**
+     * 设置对话框标题
+     * @param title 标题
+     * @return IAlertDialog
+     */
     public IAlertDialog setTitleText(String title) {
-        mTitleText = title;
         if (title != null && mTitle != null) {
+            mTitleText = title;
             mTitle.setVisibility(View.VISIBLE);
-            mTitle.setText(title);
+            mTitle.setText(mTitleText);
         }
         return this;
     }
 
+    /**
+     * 设置对话框标题
+     * @param titleResId 标题对应资源ID
+     * @return IAlertDialog
+     */
+    public IAlertDialog setTitleText(@StringRes int titleResId) {
+        mTitleText = getContext().getString(titleResId);
+        if (mTitle != null) {
+            mTitle.setVisibility(View.VISIBLE);
+            mTitle.setText(mTitleText);
+        }
+        return this;
+    }
+
+    /**
+     * 设置标题文字颜色
+     * @param textColor 标题文字颜色
+     * @return IAlertDialog
+     */
     public IAlertDialog setTitleTextColor(int textColor){
         mTitleTextColor = textColor;
         if (mTitle != null){
@@ -182,14 +219,37 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置对话框提示内容
+     * @param content 内容
+     * @return IAlertDialog
+     */
     public IAlertDialog setContentText(String content) {
-        mContentText = content;
         if (content != null && mContent != null) {
+            mContentText = content;
             mContent.setText(content);
         }
         return this;
     }
 
+    /**
+     * 设置对话框提示内容
+     * @param contentResId 内容对应资源ID
+     * @return IAlertDialog
+     */
+    public IAlertDialog setContentText(@StringRes int contentResId) {
+        mContentText = getContext().getString(contentResId);
+        if (mContent != null) {
+            mContent.setText(mContentText);
+        }
+        return this;
+    }
+
+    /**
+     * 设置对话框提示内容文字颜色
+     * @param textColor 内容文字颜色
+     * @return IAlertDialog
+     */
     public IAlertDialog setContentTextColor(int textColor){
         mContentTextColor = textColor;
         if (mContent != null){
@@ -198,9 +258,14 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置取消按钮文字
+     * @param cancel 取消按钮文字
+     * @return IAlertDialog
+     */
     public IAlertDialog setCancelText(String cancel){
-        mCancelText = cancel;
         if (cancel != null && mCancel != null){
+            mCancelText = cancel;
             mCancel.setVisibility(View.VISIBLE);
             mGap.setVisibility(View.VISIBLE);
             mCancel.setText(cancel);
@@ -208,6 +273,26 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置取消按钮文字
+     * @param cancelResId 取消按钮文字对应资源ID
+     * @return IAlertDialog
+     */
+    public IAlertDialog setCancelText(@StringRes int cancelResId){
+        mCancelText = getContext().getString(cancelResId);
+        if (mCancel != null){
+            mCancel.setVisibility(View.VISIBLE);
+            mGap.setVisibility(View.VISIBLE);
+            mCancel.setText(mCancelText);
+        }
+        return this;
+    }
+
+    /**
+     * 设置取消按钮文字颜色
+     * @param textColor 取消按钮文字颜色
+     * @return IAlertDialog
+     */
     public IAlertDialog setCancelTextColor(int textColor){
         mCancelTextColor = textColor;
         if (mCancel != null){
@@ -216,6 +301,11 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置确定按钮文字
+     * @param confirm 确定按钮文字
+     * @return IAlertDialog
+     */
     public IAlertDialog setConfirmText(String confirm){
         mConfirmText = confirm;
         if (confirm != null && mConfirm != null){
@@ -224,6 +314,24 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置确定按钮文字
+     * @param confirmResId 确定按钮文字对应资源ID
+     * @return IAlertDialog
+     */
+    public IAlertDialog setConfirmText(@StringRes int confirmResId){
+        mConfirmText = getContext().getString(confirmResId);
+        if (mConfirm != null){
+            mConfirm.setText(mConfirmText);
+        }
+        return this;
+    }
+
+    /**
+     * 设置确定按钮文字颜色
+     * @param textColor 确定按钮文字颜色
+     * @return IAlertDialog
+     */
     public IAlertDialog setConfirmTextColor(int textColor){
         mConfirmTextColor = textColor;
         if (mConfirm != null){
@@ -232,11 +340,21 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
         return this;
     }
 
+    /**
+     * 设置点击取消按钮事件
+     * @param listener 事件
+     * @return IAlertDialog
+     */
     public IAlertDialog setCancelClickListener(OnDialogClickListener listener){
         mCancelClickListener = listener;
         return this;
     }
 
+    /**
+     * 设置点击确定按钮事件
+     * @param listener 事件
+     * @return IAlertDialog
+     */
     public IAlertDialog setConfirmClickListener(OnDialogClickListener listener){
         mConfirmClickListener = listener;
         return this;

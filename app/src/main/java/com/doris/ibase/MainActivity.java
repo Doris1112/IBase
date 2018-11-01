@@ -29,6 +29,7 @@ public class MainActivity extends IBaseAppCompatActivity {
             case R.id.b_2:
                 new IAlertDialog(this, IAlertDialog.CONFIRM_TYPE)
                         .setContentText("测试内容")
+                        .setOnBackClickCancelable(false)
                         .show();
                 break;
             case R.id.b_3:
@@ -50,6 +51,10 @@ public class MainActivity extends IBaseAppCompatActivity {
                 startActivity(NextActivity.class);
                 break;
             case R.id.b_6:
+                new IAlertDialog(this, IAlertDialog.CONFIRM_TYPE)
+                        .setContentText(R.string.app_name)
+                        .setOnBackClickCancelable(false)
+                        .show();
                 break;
             default:
                 break;

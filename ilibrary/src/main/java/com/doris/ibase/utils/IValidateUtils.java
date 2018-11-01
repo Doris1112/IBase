@@ -13,7 +13,7 @@ public class IValidateUtils {
      * @return 是否
      */
     public static boolean checkMobile(String mobile) {
-        if (!mobile.matches("(13[0-9]|16[0-9]|19[0-9]|15[0-9]|17[0-9]|18[0-9]|14[0-9])[0-9]{8}$")) {
+        if (!mobile.matches("^1[3|4|5|6|7|8|9][0-9]\\d{8}$")) {
             return false;
         }
         return true;
