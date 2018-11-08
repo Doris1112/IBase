@@ -154,18 +154,16 @@ public abstract class ISharedPreferencesUtils {
     /**
      * 移除某个key值已经对应的值
      *
-     * @param context
      * @param key
      */
-    public void remove(Context context, String key) {
+    public void remove(String key) {
         getEditor().remove(key).apply();
     }
 
     /**
      * 清除所有数据
-     * @param context
      */
-    public void clear(Context context) {
+    public void clear() {
         getEditor().clear().apply();
     }
 

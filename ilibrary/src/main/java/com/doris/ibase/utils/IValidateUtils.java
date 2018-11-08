@@ -13,10 +13,7 @@ public class IValidateUtils {
      * @return 是否
      */
     public static boolean checkMobile(String mobile) {
-        if (!mobile.matches("^1[3|4|5|6|7|8|9][0-9]\\d{8}$")) {
-            return false;
-        }
-        return true;
+        return mobile.matches("^1[3|4|5|6|7|8|9][0-9]\\d{8}$");
     }
 
     /**
@@ -25,10 +22,16 @@ public class IValidateUtils {
      * @return
      */
     public static boolean checkEmail(String email) {
-        if (!email.matches("[A-Za-z\\d]+([-_.][A-Za-z\\d]+)*@([A-Za-z\\d]+[-.])+[A-Za-z]{2,5}")) {
-            return false;
-        }
-        return true;
+        return email.matches("[A-Za-z\\d]+([-_.][A-Za-z\\d]+)*@([A-Za-z\\d]+[-.])+[A-Za-z]{2,5}");
+    }
+
+    /**
+     * 判断http/https地址是否正确
+     * @param url 基础地址
+     * @return boolean
+     */
+    public static boolean validateBaseUrl(String url){
+        return url.matches("(https|http)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
     }
 
     /**
@@ -39,9 +42,7 @@ public class IValidateUtils {
      * @return
      */
     public static boolean checkLengthInterval(String text, int min, int max){
-        if (TextUtils.isEmpty(text) || text.length() < min || text.length() > max) {
-            return false;
-        }
-        return true;
+        return !TextUtils.isEmpty(text) && text.length() >= min && text.length() <= max;
     }
+
 }
