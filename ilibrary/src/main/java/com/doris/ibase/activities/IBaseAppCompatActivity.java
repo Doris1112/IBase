@@ -81,6 +81,12 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        IActivityContainer.getInstance().removeActivity(this);
+    }
+
     /**
      * 进入到下个activity
      */

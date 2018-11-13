@@ -10,6 +10,8 @@
     <color name="i_green">#00FF00</color>
     <color name="i_blue">#0000FF</color>
     <color name="i_yellow">#FFFF00</color>
+    <color name="i_cyan">#00FFFF</color>
+    <color name="i_purple">#FF00FF</color>
 
     <color name="i_default_bg">#F2F2F2</color>
 
@@ -17,5 +19,7 @@
     <color name="i_gray_6">#666666</color>
     <color name="i_gray_9">#999999</color>
     <color name="i_gray_c">#CCCCCC</color>
+    <color name="i_gray_d">#DDDDDD</color>
+    <color name="i_gray_e">#EEEEEE</color>
 
 </resources>
