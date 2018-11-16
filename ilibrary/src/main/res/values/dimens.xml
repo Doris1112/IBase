@@ -3,11 +3,9 @@
     <!-- 状态栏高度 -->
     <dimen name="statusBarSize">@dimen/dp25</dimen>
     <!-- 标题栏高度 -->
-    <dimen name="actionBar">@dimen/dp45</dimen>
-    <!-- 状态栏和标题栏高度 -->
-    <dimen name="actionBarWithStatusBarSize">@dimen/dp70</dimen>
+    <dimen name="actionBar">@dimen/dp50</dimen>
     <!-- 底部导航栏高度 -->
-    <dimen name="BottomNavigationHeight">@dimen/dp52</dimen>
+    <dimen name="BottomNavigationHeight">@dimen/dp60</dimen>
     <!-- 线条高度 -->
     <dimen name="lineHeight">@dimen/dp0_5</dimen>
     <dimen name="lineHeight1">@dimen/dp1</dimen>

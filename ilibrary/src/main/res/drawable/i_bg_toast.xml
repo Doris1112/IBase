@@ -6,5 +6,5 @@
         android:left="@dimen/dp9"
         android:right="@dimen/dp9"
         android:top="@dimen/dp3" />
-    <corners android:radius="@dimen/dp10" />
+    <corners android:radius="@dimen/dp5" />
 </shape>
