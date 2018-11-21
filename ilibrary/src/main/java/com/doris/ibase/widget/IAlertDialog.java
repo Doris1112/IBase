@@ -184,8 +184,8 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
      * @return IAlertDialog
      */
     public IAlertDialog setTitleText(String title) {
-        if (title != null && mTitle != null) {
-            mTitleText = title;
+        mTitleText = title;
+        if (mTitleText != null && mTitle != null) {
             mTitle.setVisibility(View.VISIBLE);
             mTitle.setText(mTitleText);
         }
@@ -225,8 +225,8 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
      * @return IAlertDialog
      */
     public IAlertDialog setContentText(String content) {
-        if (content != null && mContent != null) {
-            mContentText = content;
+        mContentText = content;
+        if (mContentText != null && mContent != null) {
             mContent.setText(content);
         }
         return this;
@@ -264,8 +264,8 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
      * @return IAlertDialog
      */
     public IAlertDialog setCancelText(String cancel){
-        if (cancel != null && mCancel != null){
-            mCancelText = cancel;
+        mCancelText = cancel;
+        if (mCancelText != null && mCancel != null){
             mCancel.setVisibility(View.VISIBLE);
             mGap.setVisibility(View.VISIBLE);
             mCancel.setText(cancel);
@@ -308,7 +308,7 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
      */
     public IAlertDialog setConfirmText(String confirm){
         mConfirmText = confirm;
-        if (confirm != null && mConfirm != null){
+        if (mConfirmText != null && mConfirm != null){
             mConfirm.setText(confirm);
         }
         return this;
