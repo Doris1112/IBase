@@ -35,7 +35,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     private Context mContext;
 
-    private boolean mNeedLoadMore = false, mLoadMoreIsLast = false;
+    private boolean mNeedLoadMore = false, mLoadMoreIsLast = true;
     private IBaseLoadMoreHolder mLoadMoreHolder;
 
     public static abstract class ItemView {
@@ -70,13 +70,12 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         // 底部
         if (getFooterCount() > 0) {
             int index = position - getHeaderCount() - getCount();
-            if (!mLoadMoreIsLast) {
+            if (mNeedLoadMore && !mLoadMoreIsLast) {
                 index -= 1;
             }
             if (index >= 0 && getFooterCount() > index) {
                 return mFooterList.get(index).hashCode();
             }
-
         }
         // 加载更多
         if (mNeedLoadMore) {
@@ -214,7 +213,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     public void addFooter(ItemView view) {
         if (view != null) {
             mFooterList.add(view);
-            notifyItemInserted(getHeaderCount() + getCount() + getFooterCount() - 1);
+            int position = getHeaderCount() + getCount() + getFooterCount() - 1;
+            if (mNeedLoadMore && !mLoadMoreIsLast) {
+                position = getHeaderCount() + getCount() + getFooterCount() + 1;
+            }
+            notifyItemInserted(position);
         }
     }
 
@@ -465,7 +468,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
      * 是否需要加载更多
      */
     public void needLoadMore(RecyclerView recyclerView, OnLoadMoreListener listener) {
-        needLoadMore(false, recyclerView, listener);
+        needLoadMore(true, recyclerView, listener);
     }
 
     /**
@@ -523,7 +526,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
                             && lastVisiblePosition >= lastItemPosition
                             && layoutManager.getItemCount() > layoutManager.getChildCount()) {
                         if (mLoadMoreHolder.getLoadMoreState()
-                                != IBaseLoadMoreHolder.STATE_LOAD_MORE_NO){
+                                != IBaseLoadMoreHolder.STATE_LOAD_MORE_NO) {
                             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
                             mLoadMoreHolder.onLoadMore();
                         }

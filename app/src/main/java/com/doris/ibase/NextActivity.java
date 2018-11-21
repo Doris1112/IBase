@@ -54,8 +54,8 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh: ");
-                mAdapter.removeAllHeader();
-                mAdapter.removeAllFooter();
+//                mAdapter.removeAllHeader();
+//                mAdapter.removeAllFooter();
                 isRefresh = true;
                 page = 1;
                 if (type.equals("宋")) {
@@ -87,7 +87,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                         resultBean.getAuthors());
             }
         });
-        mAdapter.needLoadMore(true, recyclerView, this);
+//        mAdapter.needLoadMore(false, recyclerView, this);
         recyclerView.setAdapter(mAdapter);
     }
 
