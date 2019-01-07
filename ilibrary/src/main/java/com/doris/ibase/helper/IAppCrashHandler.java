@@ -1,4 +1,4 @@
-package com.doris.ibase.application;
+package com.doris.ibase.helper;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

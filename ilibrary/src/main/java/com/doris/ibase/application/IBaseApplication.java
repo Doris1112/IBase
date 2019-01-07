@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
+import com.doris.ibase.helper.IAppCrashHandler;
 import com.doris.ibase.utils.ILogUtils;
 
 /**
