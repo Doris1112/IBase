@@ -97,7 +97,7 @@ public class ISystemBarTintManager {
 
         mConfig = new SystemBarConfig(activity, mStatusBarAvailable, mNavBarAvailable);
         // device might not have virtual navigation keys
-        if (!mConfig.hasNavigtionBar()) {
+        if (!mConfig.hasNavigationBar()) {
             mNavBarAvailable = false;
         }
 
@@ -480,7 +480,7 @@ public class ISystemBarTintManager {
          *
          * @return True if this device uses soft key navigation, False otherwise.
          */
-        public boolean hasNavigtionBar() {
+        public boolean hasNavigationBar() {
             return mHasNavigationBar;
         }
 

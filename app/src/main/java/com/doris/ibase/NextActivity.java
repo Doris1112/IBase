@@ -34,7 +34,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
     private PoetryService poetryService;
-    private int page = 1, count = 20;
+    private int page = 1, count = 20, addFirst = 1;
     private boolean isRefresh = true;
     private PoetryAdapter mAdapter;
 
@@ -87,7 +87,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                         resultBean.getAuthors());
             }
         });
-//        mAdapter.needLoadMore(false, recyclerView, this);
+        mAdapter.needLoadMore(false, recyclerView, this);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -183,6 +183,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                 page = 1;
                 type = "宋";
                 poetryService.getSonyPoetry(page, count).enqueue(callback);
+                mAdapter.addFirst(getAddFirst());
                 break;
             case R.id.Tang:
                 isRefresh = true;
@@ -299,6 +300,15 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
         if (isRefresh) {
             refreshLayout.setRefreshing(false);
         }
+    }
+
+    private Poetry.ResultBean getAddFirst() {
+        Poetry.ResultBean bean = new Poetry.ResultBean();
+        bean.setAuthors("我" + addFirst);
+        bean.setContent("没有" + addFirst);
+        bean.setTitle("卧槽" + addFirst);
+        addFirst++;
+        return bean;
     }
 
 }

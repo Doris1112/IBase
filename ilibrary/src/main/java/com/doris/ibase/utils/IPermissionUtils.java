@@ -23,7 +23,7 @@ public class IPermissionUtils {
         for (String permission : permissions){
             if (ActivityCompat.checkSelfPermission(context, permission) ==
                     PackageManager.PERMISSION_DENIED){
-                // 为授予该权限
+                // 未授予该权限
                 mPermissions.add(permission);
             }
         }
@@ -32,7 +32,7 @@ public class IPermissionUtils {
     }
 
     /**
-     * 监测App是否已授予指定权限
+     * 检查App是否已授予指定权限
      * @param context
      * @param permission
      * @return

@@ -44,21 +44,21 @@ public class IDisplayUtils {
     /**
      * sp px转换
      */
-    public static int sp2px(Context context, int spValue) {
+    public static int sp2px(Context context, float spValue) {
         return (int) (spValue * context.getResources().getDisplayMetrics().scaledDensity + 0.5f);
     }
 
     /**
      * px dp转换
      */
-    public static int px2dp(Context context, int pxValue) {
+    public static int px2dp(Context context, float pxValue) {
         return (int) (pxValue / context.getResources().getDisplayMetrics().density + 0.5f);
     }
 
     /**
      * dp px转换
      */
-    public static int dp2px(Context context, int dpValue) {
+    public static int dp2px(Context context, float dpValue) {
         return (int) (dpValue * context.getResources().getDisplayMetrics().density + 0.5f);
     }
 

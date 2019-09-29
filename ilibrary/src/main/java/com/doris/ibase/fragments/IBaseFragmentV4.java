@@ -42,6 +42,7 @@ public abstract class IBaseFragmentV4 extends Fragment {
         if (mRoot == null) {
             // 初始化当前的根布局，但是不在创建时就添加到container里边
             View root = inflater.inflate(getContentLayoutId(), container, false);
+            initBefore(savedInstanceState);
             initWidget(root);
             mRoot = root;
         } else if (mRoot.getParent() != null) {
@@ -82,6 +83,13 @@ public abstract class IBaseFragmentV4 extends Fragment {
     protected abstract int getContentLayoutId();
 
     /**
+     * 初始化控件调用之前
+     */
+    protected void initBefore(Bundle savedInstanceState) {
+
+    }
+
+    /**
      * 初始化控件
      */
     protected void initWidget(View root) {
@@ -96,16 +104,16 @@ public abstract class IBaseFragmentV4 extends Fragment {
     }
 
     /**
-     * 初始化数据
+     * 当首次初始化数据的时候会调用的方法
      */
-    protected void initData() {
+    protected void onFirstInit() {
 
     }
 
     /**
-     * 当首次初始化数据的时候会调用的方法
+     * 初始化数据
      */
-    protected void onFirstInit() {
+    protected void initData() {
 
     }
 

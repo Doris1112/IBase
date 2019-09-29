@@ -21,14 +21,14 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 在界面未初始化之前调用的初始化窗口
-        initWidows();
+        initWidows(savedInstanceState);
         // 初始化参数
         if (initArgs(getIntent())) {
             // 添加Activity
             IActivityContainer.getInstance().addActivity(this);
             // 得到界面Id并设置到Activity界面中
             setContentView(getContentLayoutId());
-            initBefore();
+            initBefore(savedInstanceState);
             initWidget();
             initData();
         } else {
@@ -37,16 +37,9 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
     }
 
     /**
-     * 初始化控件调用之前
-     */
-    protected void initBefore() {
-
-    }
-
-    /**
      * 初始化窗口
      */
-    protected void initWidows() {
+    protected void initWidows(Bundle savedInstanceState) {
 
     }
 
@@ -58,6 +51,13 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
      */
     protected boolean initArgs(Intent intent) {
         return true;
+    }
+
+    /**
+     * 初始化控件调用之前
+     */
+    protected void initBefore(Bundle savedInstanceState) {
+
     }
 
     /**

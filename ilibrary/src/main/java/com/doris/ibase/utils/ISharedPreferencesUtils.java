@@ -152,7 +152,7 @@ public abstract class ISharedPreferencesUtils {
     }
 
     /**
-     * 移除某个key值已经对应的值
+     * 移除key值对应的值
      *
      * @param key
      */
@@ -168,7 +168,7 @@ public abstract class ISharedPreferencesUtils {
     }
 
     /**
-     * 查询某个key是否已经存在
+     * 查询key是否已经存在
      * @param key
      * @return
      */

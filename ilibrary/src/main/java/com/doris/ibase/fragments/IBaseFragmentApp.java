@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import com.doris.ibase.config.INumberConfig;
 
 /**
- * Created by Doris on 2018/9/3.
+ * @author Doris.
+ * @date 2018/8/20.
  */
+
 public abstract class IBaseFragmentApp extends Fragment {
 
     protected View mRoot;
@@ -40,6 +42,7 @@ public abstract class IBaseFragmentApp extends Fragment {
         if (mRoot == null) {
             // 初始化当前的根布局，但是不在创建时就添加到container里边
             View root = inflater.inflate(getContentLayoutId(), container, false);
+            initBefore(savedInstanceState);
             initWidget(root);
             mRoot = root;
         } else if (mRoot.getParent() != null) {
@@ -80,6 +83,13 @@ public abstract class IBaseFragmentApp extends Fragment {
     protected abstract int getContentLayoutId();
 
     /**
+     * 初始化控件调用之前
+     */
+    protected void initBefore(Bundle savedInstanceState) {
+
+    }
+
+    /**
      * 初始化控件
      */
     protected void initWidget(View root) {
@@ -94,16 +104,16 @@ public abstract class IBaseFragmentApp extends Fragment {
     }
 
     /**
-     * 初始化数据
+     * 当首次初始化数据的时候会调用的方法
      */
-    protected void initData() {
+    protected void onFirstInit() {
 
     }
 
     /**
-     * 当首次初始化数据的时候会调用的方法
+     * 初始化数据
      */
-    protected void onFirstInit() {
+    protected void initData() {
 
     }
 
@@ -173,5 +183,4 @@ public abstract class IBaseFragmentApp extends Fragment {
         lastClickTime = time;
         return false;
     }
-
 }

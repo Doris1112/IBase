@@ -40,13 +40,13 @@ public class IAlertDialog extends Dialog implements View.OnClickListener {
 
     private OnDialogClickListener mCancelClickListener, mConfirmClickListener;
     private boolean mCloseFromCancel, mCancelable = true;
-    private int mAlertType = CANCEL_TYPE;
+    private int mAlertType;
 
     public IAlertDialog(@NonNull Context context) {
         this(context, CANCEL_TYPE);
     }
 
-    public IAlertDialog(Context context, int alertType) {
+    public IAlertDialog(@NonNull Context context, int alertType) {
         super(context, R.style.i_alert_dialog);
         setCanceledOnTouchOutside(false);
 

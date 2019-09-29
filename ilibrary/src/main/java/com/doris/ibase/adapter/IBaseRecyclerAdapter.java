@@ -387,6 +387,25 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
      *
      * @param data
      */
+    public void addFirst(Data data) {
+        if (data != null) {
+            synchronized (mLock) {
+                mDataList.addFirst(data);
+            }
+        }
+        if (mNotifyOnChange) {
+            notifyItemInserted(getHeaderCount());
+        }
+        if (mNeedLoadMore) {
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
+        }
+    }
+
+    /**
+     * 添加一条数据
+     *
+     * @param data
+     */
     public void add(Data data) {
         if (data != null) {
             synchronized (mLock) {
