@@ -20,4 +20,6 @@
     <color name="i_gray_d">#DDDDDD</color>
     <color name="i_gray_e">#EEEEEE</color>
 
+    <color name="i_load_more_loading_view_outside">#3F51B5</color>
+    <color name="i_load_more_loading_view_inside">#3F51B5</color>
 </resources>

@@ -1,7 +1,6 @@
 package com.doris.ibase;
 
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.widget.ImageView;
 import com.doris.ibase.activities.IBaseAppCompatActivity;
 import com.doris.ibase.adapter.IBaseRecyclerAdapter;
 import com.doris.ibase.adapter.IBaseViewHolder;
+import com.doris.ibase.refresh.IRefreshLayout;
 import com.doris.ibase.utils.IToastUtils;
 
 /**
@@ -23,7 +23,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
 
     private static final String TAG = NextActivity.class.getSimpleName();
 
-    private SwipeRefreshLayout mRefreshLayout;
+    private IRefreshLayout mRefreshLayout;
     private RecyclerView mRecyclerView;
     private int mPageIndex = 1;
     private PoetryAdapter mAdapter;
@@ -37,7 +37,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
     protected void initWidget() {
         super.initWidget();
         mRefreshLayout = findViewById(R.id.refreshLayout);
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mRefreshLayout.setOnRefreshListener(new IRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh: ");
@@ -49,7 +49,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
                         mAdapter.add(Poetry.getPoetry());
                         mRefreshLayout.setRefreshing(false);
                     }
-                },2000);
+                },5000);
             }
         });
 

@@ -100,11 +100,11 @@ public class ILoadingView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // 内外层圆弧的宽度
-        float outsideArcWidth = 8f;
+        float sideArcWidth = 8f;
         //首先绘制最外层的圆
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(outsideArcWidth);
+        mPaint.setStrokeWidth(sideArcWidth);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setColor(mOutsideArcColor);
@@ -115,13 +115,13 @@ public class ILoadingView extends View {
         mPaint.reset();
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(outsideArcWidth);
+        mPaint.setStrokeWidth(sideArcWidth);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setColor(mInsideArcColor);
-        canvas.drawArc(20 + outsideArcWidth, 20 + outsideArcWidth,
-                mDefaultSize - (20 + outsideArcWidth),
-                mDefaultSize - (20 + outsideArcWidth), (360 - mStartAngle),
+        canvas.drawArc(20 + sideArcWidth, 20 + sideArcWidth,
+                mDefaultSize - (20 + sideArcWidth),
+                mDefaultSize - (20 + sideArcWidth), (360 - mStartAngle),
                 -mInsideArcAngle, false, mPaint);
     }
 
