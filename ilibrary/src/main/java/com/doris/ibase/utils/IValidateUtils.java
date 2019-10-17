@@ -3,14 +3,13 @@ package com.doris.ibase.utils;
 import android.text.TextUtils;
 
 /**
- * Created by Doris on 2018/9/3.
+ * @author Doris
+ * @date 2018/9/3
  */
 public class IValidateUtils {
 
     /**
      * 判断手机号码是否正确
-     *
-     * @return boolean
      */
     public static boolean checkMobile(String mobile) {
         return mobile.matches("^1[3|4|5|6|7|8|9][0-9]\\d{8}$");

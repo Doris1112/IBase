@@ -5,4 +5,6 @@
     <string name="i_dialog_content">内容</string>
     <string name="i_dialog_confirm">确定</string>
     <string name="i_dialog_cancel">取消</string>
+
+    <string name="i_load_more">正在加载&#8230;</string>
 </resources>

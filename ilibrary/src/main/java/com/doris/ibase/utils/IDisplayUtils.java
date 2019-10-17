@@ -3,7 +3,8 @@ package com.doris.ibase.utils;
 import android.content.Context;
 
 /**
- * Created by Doris on 2018/9/29.
+ * @author Doris
+ * @date 2018/9/29
  */
 public class IDisplayUtils {
 

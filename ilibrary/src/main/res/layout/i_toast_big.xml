@@ -11,7 +11,8 @@
     <ImageView
         android:id="@+id/i_tv_toast_img"
         android:layout_width="@dimen/dp30"
-        android:layout_height="@dimen/dp30" />
+        android:layout_height="@dimen/dp30"
+        android:contentDescription="@string/app_name"/>
 
     <TextView
         android:id="@+id/i_tv_toast"

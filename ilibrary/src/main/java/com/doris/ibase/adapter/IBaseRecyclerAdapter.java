@@ -18,11 +18,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Created by Doris on 2018/10/28.
+ * @author Doris
+ * @date 2018/10/28
  */
 public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder>
         implements View.OnClickListener, View.OnLongClickListener,
-        IBaseHolderUpdateCallback<Data> {
+        IHolderUpdateCallback<Data> {
 
     private LinkedList<Data> mDataList;
     private LinkedList<ItemView> mHeaderList = new LinkedList<>();
@@ -585,8 +586,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 设置是否需要刷新
-     *
-     * @param notifyOnChange
      */
     public void setNotifyOnChange(boolean notifyOnChange) {
         mNotifyOnChange = notifyOnChange;
@@ -602,7 +601,8 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     @Override
     public void onClick(View v) {
-        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
+        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>)
+                v.getTag(R.id.tag_recycler_holder);
         if (mItemClickListener != null) {
             mItemClickListener.onItemClick(viewHolder, viewHolder.getData());
         }
@@ -618,7 +618,8 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     @Override
     public boolean onLongClick(View v) {
-        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>) v.getTag(R.id.tag_recycler_holder);
+        IBaseViewHolder<Data> viewHolder = (IBaseViewHolder<Data>)
+                v.getTag(R.id.tag_recycler_holder);
         if (mItemLongClickListener != null) {
             mItemLongClickListener.onItemLongClick(viewHolder, viewHolder.getData());
             return true;
@@ -646,7 +647,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
         private int mMaxCount;
 
-        public GridSpanSizeLookup(int maxCount) {
+        GridSpanSizeLookup(int maxCount) {
             this.mMaxCount = maxCount;
         }
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--自定义等待view中的属性-->
+    <declare-styleable name="ILoadingView">
+        <!--loading动画执行一次所需的时间-->
+        <attr name="round_once_time" format="integer" />
+        <!--外层圆弧的颜色-->
+        <attr name="round_outside_color" format="color" />
+        <!--内层圆弧的颜色-->
+        <attr name="round_inside_color" format="color" />
+        <!--内层圆弧的角度-->
+        <attr name="round_inside_angle" format="float" />
+        <!--外层圆弧的角度-->
+        <attr name="round_outside_angle" format="float" />
+        <!--圆弧旋转的起始角度-->
+        <attr name="round_start_angle" format="float" />
+    </declare-styleable>
+</resources>

@@ -6,14 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Doris on 2018/10/28.
- *
- * @param <Data>
+ * @author Doris
+ * @date 2018/10/28
  */
 public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
     private Data mData;
-    private IBaseHolderUpdateCallback mCallback;
+    private IHolderUpdateCallback<Data> mCallback;
 
     public IBaseViewHolder(View itemView) {
         super(itemView);
@@ -21,8 +20,6 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
     /**
      * 用于绑定数据的触发
-     *
-     * @param data
      */
     public void bind(Data data, int position) {
         mData = data;
@@ -31,8 +28,6 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
     /**
      * 当触发绑定数据的时候的回调
-     *
-     * @param data
      */
     public void onBind(Data data, int position) {
 
@@ -40,8 +35,6 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
     /**
      * Holder自己对自己对应的Data进行更新操作
-     *
-     * @param data
      */
     public void updateData(Data data) {
         if (mCallback != null) {
@@ -61,7 +54,7 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
         return mData;
     }
 
-    public IBaseViewHolder<Data> setHolderUpdateCallback(IBaseHolderUpdateCallback callback){
+    public IBaseViewHolder<Data> setHolderUpdateCallback(IHolderUpdateCallback<Data> callback){
         mCallback = callback;
         return this;
     }

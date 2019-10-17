@@ -13,7 +13,8 @@ import android.widget.Toast;
 import com.doris.ibase.ilibrary.R;
 
 /**
- * Created by Doris on 2018/9/2.
+ * @author Doris
+ * @date 2018/9/2
  */
 public class IToastUtils {
 

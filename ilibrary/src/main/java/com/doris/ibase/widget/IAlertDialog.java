@@ -18,7 +18,8 @@ import android.widget.TextView;
 import com.doris.ibase.ilibrary.R;
 
 /**
- * Created by Doris on 2018/9/20.
+ * @author Doris
+ * @date 2018/9/20
  */
 public class IAlertDialog extends Dialog implements View.OnClickListener {
 

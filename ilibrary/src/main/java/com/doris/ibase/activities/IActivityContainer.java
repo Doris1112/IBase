@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Doris.
- * @date 2018/8/20.
+ * @author Doris
+ * @date 2018/8/20
  */
 public class IActivityContainer {
 
@@ -25,7 +25,6 @@ public class IActivityContainer {
 
     /**
      * 添加 activity
-     * @param activity
      */
     public void addActivity(Activity activity) {
         activityStack.add(activity);
@@ -33,7 +32,6 @@ public class IActivityContainer {
 
     /**
      * 移除 activity
-     * @param activity
      */
     public void removeActivity(Activity activity) {
         activityStack.remove(activity);

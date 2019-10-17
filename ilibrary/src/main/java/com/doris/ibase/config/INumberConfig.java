@@ -1,7 +1,8 @@
 package com.doris.ibase.config;
 
 /**
- * Created by Doris on 2018/9/1.
+ * @author Doris
+ * @date 2018/9/1
  */
 public class INumberConfig {
 

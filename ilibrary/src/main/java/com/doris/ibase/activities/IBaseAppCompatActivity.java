@@ -8,7 +8,7 @@ import com.doris.ibase.config.INumberConfig;
 
 /**
  * @author Doris
- * @date 2018/8/20.
+ * @date 2018/8/20
  */
 public abstract class IBaseAppCompatActivity extends AppCompatActivity {
 
@@ -46,7 +46,6 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
     /**
      * 初始化相关参数
      *
-     * @param intent
      * @return 如果参数正确返回True，错误返回False
      */
     protected boolean initArgs(Intent intent) {

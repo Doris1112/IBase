@@ -8,15 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Doris on 2018/9/1.
+ * @author Doris
+ * @date 2018/9/1
  */
 public class IPermissionUtils {
 
     /**
      * 检查App是否已授予某些权限
-     * @param context
-     * @param permissions
-     * @return
      */
     public static String[] checkPermissions(Context context, String...permissions){
         List<String> mPermissions = new ArrayList<>();
@@ -33,9 +31,6 @@ public class IPermissionUtils {
 
     /**
      * 检查App是否已授予指定权限
-     * @param context
-     * @param permission
-     * @return
      */
     public static boolean checkPermissions(Context context, String permission){
         return ActivityCompat.checkSelfPermission(context, permission) ==

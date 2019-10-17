@@ -13,10 +13,9 @@ import android.view.ViewGroup;
 import com.doris.ibase.config.INumberConfig;
 
 /**
- * @author Doris.
- * @date 2018/8/20.
+ * @author Doris
+ * @date 2018/8/20
  */
-
 public abstract class IBaseFragmentApp extends Fragment {
 
     protected View mRoot;

@@ -10,7 +10,8 @@ import com.doris.ibase.helper.IAppCrashHandler;
 import com.doris.ibase.utils.ILogUtils;
 
 /**
- * Created by Doris on 2018/1/25.
+ * @author Doris
+ * @date 2018/1/25
  */
 public abstract class IBaseApplication extends MultiDexApplication {
 

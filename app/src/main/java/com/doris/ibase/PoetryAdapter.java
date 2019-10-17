@@ -11,9 +11,9 @@ import com.doris.ibase.adapter.IBaseViewHolder;
 /**
  * Created by Doris on 2018/10/27.
  */
-public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
+public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry> {
 
-    public PoetryAdapter(Context context) {
+    PoetryAdapter(Context context) {
         super(context);
     }
 
@@ -23,11 +23,11 @@ public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
     }
 
     @Override
-    public IBaseViewHolder<Poetry.ResultBean> createContentViewHolder(View root) {
+    public IBaseViewHolder<Poetry> createContentViewHolder(View root) {
         return new Holder(root);
     }
 
-    private class Holder extends IBaseViewHolder<Poetry.ResultBean> {
+    private class Holder extends IBaseViewHolder<Poetry> {
 
         private ImageView close;
         private TextView title, authors, content;
@@ -41,7 +41,7 @@ public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry.ResultBean> {
         }
 
         @Override
-        public void onBind(final Poetry.ResultBean poetry, int position) {
+        public void onBind(final Poetry poetry, int position) {
             title.setText(poetry.getTitle());
             authors.setText(poetry.getAuthors());
             String contentValue = poetry.getContent().replace("|", "\n");

@@ -17,61 +17,43 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @author Doris.
- * @date 2018/8/20.
+ * @author Doris
+ * @date 2018/8/20
  */
-
 public abstract class ILogUtils {
 
     /**
      * 获取打印 TAG
-     *
-     * @return
      */
     public abstract String getTag();
 
     /**
      * 获取日志保存目录
-     *
-     * @return
      */
     public abstract String getLogSavePath();
 
     /**
      * 日志开关
-     *
-     * @return
      */
     protected abstract boolean getLogSwitch();
 
     /**
      * 是否加密日志
-     *
-     * @return
      */
     protected abstract boolean getLogEncrypt();
 
     /**
      * 解密
-     *
-     * @param string
-     * @return
      */
     protected abstract String decode(String string);
 
     /**
      * 加密
-     *
-     * @param string
-     * @return
      */
     protected abstract String encode(String string);
 
     /**
      * 读取日志
-     *
-     * @param filePath
-     * @return
      */
     public String redLog(String filePath) {
         StringBuffer result = new StringBuffer();
@@ -100,8 +82,6 @@ public abstract class ILogUtils {
 
     /**
      * 插入日志
-     *
-     * @param msg
      */
     public void writeLog(String msg) {
         if (msg == null) {
@@ -142,9 +122,6 @@ public abstract class ILogUtils {
 
     /**
      * 插入日志
-     *
-     * @param msg
-     * @param throwable
      */
     public void writeLog(String msg, Throwable throwable) {
         writeLog(msg);
@@ -153,8 +130,6 @@ public abstract class ILogUtils {
 
     /**
      * 插入日志
-     *
-     * @param throwable
      */
     public void writeLog(Throwable throwable) {
         throwable.printStackTrace();
@@ -193,9 +168,6 @@ public abstract class ILogUtils {
 
     /**
      * 获取异常信息
-     *
-     * @param ex
-     * @return
      */
     private String getExceptionInfo(Throwable ex) {
         String result = null;
@@ -240,9 +212,6 @@ public abstract class ILogUtils {
 
     /**
      * 检查当天日志文件是否存在
-     *
-     * @param file
-     * @return
      */
     private boolean isLogExist(File file) {
         boolean ret = false;

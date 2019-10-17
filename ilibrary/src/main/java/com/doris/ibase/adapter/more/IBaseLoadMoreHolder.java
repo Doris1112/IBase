@@ -7,8 +7,11 @@ import android.view.ViewGroup;
 import com.doris.ibase.adapter.IBaseRecyclerAdapter;
 import com.doris.ibase.adapter.IBaseViewHolder;
 
+import java.lang.ref.WeakReference;
+
 /**
- * Created by Doris on 2018/10/30.
+ * @author Doris
+ * @date 2018/10/30
  */
 public abstract class IBaseLoadMoreHolder {
 
@@ -20,23 +23,15 @@ public abstract class IBaseLoadMoreHolder {
     public static final int STATE_LOAD_MORE_NO = 4;
 
     private IBaseRecyclerAdapter.OnLoadMoreListener mLoadMoreListener;
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            notifyLoadMoreChanged();
-        }
-    };
+    private NotifyLoadMoreChangedHandler mHandler = new NotifyLoadMoreChangedHandler(this);
 
     public abstract IBaseViewHolder<Integer> getLoadMoreHolder(ViewGroup parent);
 
     /**
      * 更新加载状态
-     *
-     * @param state
      */
     public void changeMoreState(int state) {
-        if (mState != state){
+        if (mState != state) {
             mState = state;
             mHandler.sendEmptyMessageDelayed(mState, 100);
         }
@@ -44,9 +39,8 @@ public abstract class IBaseLoadMoreHolder {
 
     /**
      * 获取加载更多状态
-     * @return
      */
-    public int getLoadMoreState(){
+    public int getLoadMoreState() {
         return mState;
     }
 
@@ -54,8 +48,6 @@ public abstract class IBaseLoadMoreHolder {
 
     /**
      * 设置加载更多事件
-     *
-     * @param listener 加载更多事件
      */
     public void setOnLoadMoreListener(IBaseRecyclerAdapter.OnLoadMoreListener listener) {
         mLoadMoreListener = listener;
@@ -72,4 +64,18 @@ public abstract class IBaseLoadMoreHolder {
         }
     }
 
+    private static class NotifyLoadMoreChangedHandler extends Handler {
+
+        private final WeakReference<IBaseLoadMoreHolder> mTarget;
+
+        NotifyLoadMoreChangedHandler(IBaseLoadMoreHolder target){
+            mTarget = new WeakReference<>(target);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mTarget.get().notifyLoadMoreChanged();
+        }
+    }
 }

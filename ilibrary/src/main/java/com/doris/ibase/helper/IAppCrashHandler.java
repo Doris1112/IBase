@@ -7,7 +7,8 @@ import android.content.pm.PackageManager;
 import com.doris.ibase.utils.ILogUtils;
 
 /**
- * Created by Doris on 2018/8/29.
+ * @author Doris
+ * @date 2018/8/29
  */
 public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
 

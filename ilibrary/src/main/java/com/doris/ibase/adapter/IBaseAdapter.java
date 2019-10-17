@@ -7,7 +7,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Created by Doris on 2018/3/1.
+ * @author Doris
+ * @date 2018/3/1
  */
 public abstract class IBaseAdapter<T> extends BaseAdapter {
 

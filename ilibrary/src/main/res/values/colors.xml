@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="load_more_progress_color">#FF4081</color>
-
     <color name="i_transparent">#00000000</color>
     <color name="i_white">#FFFFFF</color>
     <color name="i_black">#000000</color>
