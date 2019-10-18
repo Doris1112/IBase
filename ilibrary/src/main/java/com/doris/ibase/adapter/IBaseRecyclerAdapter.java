@@ -439,9 +439,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
             if (mNotifyOnChange) {
                 notifyItemRemoved(getHeaderCount() + position);
             }
-            if (mNeedLoadMore){
-                updateLoadMoreState();
-            }
         }
     }
 
@@ -456,50 +453,19 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         if (mNotifyOnChange) {
             notifyItemRangeRemoved(getHeaderCount(), count);
         }
-        if (mNeedLoadMore){
-            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
-        }
     }
 
     /**
      * 修改数据集合
      */
     public void setDataList(Collection<? extends Data> dataList){
-        int count = getCount();
-        synchronized (mLock) {
-            mDataList.clear();
-        }
-        if (mNotifyOnChange) {
-            notifyItemRangeRemoved(getHeaderCount(), count);
-        }
-        if (dataList != null && dataList.size() > 0) {
-            synchronized (mLock) {
-                mDataList.addAll(dataList);
-            }
-            if (mNotifyOnChange) {
-                notifyItemRangeInserted(
-                        getHeaderCount() + getCount() - dataList.size() + 1,
-                        dataList.size());
-            }
-        }
+        clear();
+        add(dataList);
     }
 
     public void setDataList(Data data){
-        int count = getCount();
-        synchronized (mLock) {
-            mDataList.clear();
-        }
-        if (mNotifyOnChange) {
-            notifyItemRangeRemoved(getHeaderCount(), count);
-        }
-        if (data != null) {
-            synchronized (mLock) {
-                mDataList.add(data);
-            }
-        }
-        if (mNotifyOnChange) {
-            notifyItemInserted(getHeaderCount() + getCount() + 1);
-        }
+       clear();
+       add(data);
     }
 
     /**
@@ -509,24 +475,24 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         needLoadMore(true, recyclerView, listener);
     }
 
+    public void needLoadMore(RecyclerView recyclerView, OnLoadMoreListener listener, IBaseLoadMoreHolder loadMoreHolder) {
+        needLoadMore(true, recyclerView, loadMoreHolder, listener);
+    }
+
     public void needLoadMore(boolean loadMoreIsLast, RecyclerView recyclerView, OnLoadMoreListener listener) {
         needLoadMore(loadMoreIsLast, recyclerView, new IDefaultLoadMoreHolder(), listener);
     }
 
     public void needLoadMore(boolean loadMoreIsLast, RecyclerView recyclerView,
                              IBaseLoadMoreHolder loadMoreHolder, OnLoadMoreListener listener) {
-        mNeedLoadMore = true;
-        mLoadMoreIsLast = loadMoreIsLast;
         mLoadMoreRecycler = recyclerView;
-        mLoadMoreHolder = loadMoreHolder;
-        mLoadMoreHolder.setOnLoadMoreListener(listener);
-        initLoadMore();
-    }
-
-    private void initLoadMore() {
         if (mLoadMoreRecycler == null) {
             return;
         }
+        mNeedLoadMore = true;
+        mLoadMoreIsLast = loadMoreIsLast;
+        mLoadMoreHolder = loadMoreHolder;
+        mLoadMoreHolder.setOnLoadMoreListener(listener);
         mLoadMoreRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -537,9 +503,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
                 }
             }
         });
-        if (getCount() == 0) {
-            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
-        }
     }
 
     private void updateLoadMoreState(){
@@ -559,10 +522,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
             lastVisiblePosition = findMax(spanCount);
         } else {
             lastVisiblePosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
-        }
-        if (getCount() == 0) {
-            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
-            return;
         }
         int lastItemPosition;
         if (mLoadMoreIsLast) {
@@ -639,6 +598,15 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     public void loadMoreError() {
         if (mNeedLoadMore) {
             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_ERROR);
+        }
+    }
+
+    /**
+     * 无数据
+     */
+    public void loadMoreEmpty(){
+        if (mNeedLoadMore){
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
         }
     }
 
