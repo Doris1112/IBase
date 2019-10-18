@@ -62,6 +62,9 @@ public class MainActivity extends IBaseAppCompatActivity {
                         .setOnBackClickCancelable(false)
                         .show();
                 break;
+            case R.id.b_7:
+
+                break;
             default:
                 break;
         }
