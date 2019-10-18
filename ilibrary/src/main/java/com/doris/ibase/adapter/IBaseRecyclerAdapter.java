@@ -1,7 +1,6 @@
 package com.doris.ibase.adapter;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -458,14 +457,14 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     /**
      * 修改数据集合
      */
-    public void setDataList(Collection<? extends Data> dataList){
+    public void setDataList(Collection<? extends Data> dataList) {
         clear();
         add(dataList);
     }
 
-    public void setDataList(Data data){
-       clear();
-       add(data);
+    public void setDataList(Data data) {
+        clear();
+        add(data);
     }
 
     /**
@@ -505,8 +504,8 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         });
     }
 
-    private void updateLoadMoreState(){
-        if (mLoadMoreRecycler == null){
+    private void updateLoadMoreState() {
+        if (mLoadMoreRecycler == null) {
             return;
         }
         int lastVisiblePosition;
@@ -550,7 +549,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     /**
      * 设置当前正在刷新
      */
-    public void currentRefresh(){
+    public void currentRefresh() {
         if (mNeedLoadMore) {
             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_CURRENT_REFRESH);
         }
@@ -559,27 +558,20 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     /**
      * 开始加载更多
      */
-    public void startLoadMore(){
-        if (mNeedLoadMore){
-            if (mLoadMoreHolder.canLoadMore()) {
-                mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
-                mLoadMoreHolder.onLoadMore();
-            }
+    public void startLoadMore() {
+        if (mNeedLoadMore) {
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
+            mLoadMoreHolder.onLoadMore();
         }
     }
 
     /**
      * 可以加载更多
      */
-    public void canLoadMore(){
-        if (mNeedLoadMore){
+    public void canLoadMore() {
+        if (mNeedLoadMore) {
             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    updateLoadMoreState();
-                }
-            }, 500);
+            updateLoadMoreState();
         }
     }
 
@@ -604,8 +596,8 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     /**
      * 无数据
      */
-    public void loadMoreEmpty(){
-        if (mNeedLoadMore){
+    public void loadMoreEmpty() {
+        if (mNeedLoadMore) {
             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
         }
     }

@@ -35,6 +35,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
 
     private View mTarget;
     private OnRefreshListener mListener;
+    private OnStartRefreshAnimListener mStartListener;
     private boolean mRefreshing;
     private int mTouchSlop;
     private float mTotalDragDistance;
@@ -129,8 +130,9 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         mOriginalOffsetTop = mCurrentTargetOffsetTop = -mCircleDiameter;
         moveToStart(1.0F);
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.IRefreshLayout);
-        setEnabled(array.getBoolean(R.styleable.IRefreshLayout_needRefresh, true));
-        setProgressColor(array.getColor(R.styleable.IRefreshLayout_progressColor, Color.BLACK));
+        setEnabled(array.getBoolean(R.styleable.IRefreshLayout_need_refresh, true));
+        setOutsideColor(array.getColor(R.styleable.IRefreshLayout_progress_outside_color, Color.BLACK));
+        setInsideColor(array.getColor(R.styleable.IRefreshLayout_progress_inside_color, Color.BLACK));
         array.recycle();
     }
 
@@ -189,9 +191,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        if (!enabled) {
-            reset();
-        }
+        reset();
     }
 
     @Override
@@ -435,8 +435,12 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         }
     }
 
-    public void setOnRefreshListener(@Nullable IRefreshLayout.OnRefreshListener listener) {
+    public void setOnRefreshListener(IRefreshLayout.OnRefreshListener listener) {
         mListener = listener;
+    }
+
+    public void setOnStartRefreshAnimListener(IRefreshLayout.OnStartRefreshAnimListener listener) {
+        mStartListener = listener;
     }
 
     public void setRefreshing(boolean refreshing) {
@@ -455,8 +459,17 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         return mRefreshing;
     }
 
-    public void setProgressColor(int color){
-        mProgress.setColor(color);
+    public void setProgressColor(int color) {
+        mProgress.setOutsideColor(color);
+        mProgress.setInsideColor(color);
+    }
+
+    public void setOutsideColor(int color) {
+        mProgress.setOutsideColor(color);
+    }
+
+    public void setInsideColor(int color) {
+        mProgress.setInsideColor(color);
     }
 
     private boolean noCanChildScrollUp() {
@@ -513,13 +526,15 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             mNotify = notify;
             ensureTarget();
             mRefreshing = refreshing;
+            if (mNotify && mStartListener != null) {
+                mStartListener.onStart();
+            }
             if (mRefreshing) {
                 animateOffsetToCorrectPosition(mCurrentTargetOffsetTop, mRefreshListener);
             } else {
                 startScaleDownAnimation(mRefreshListener);
             }
         }
-
     }
 
     private void startScaleDownAnimation(Animation.AnimationListener listener) {
@@ -642,7 +657,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         if (listener != null) {
             mCircleView.setAnimationListener(listener);
         }
-
         mCircleView.clearAnimation();
         mCircleView.startAnimation(mAnimateToCorrectPosition);
     }
@@ -682,6 +696,10 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
 
     public interface OnRefreshListener {
         void onRefresh();
+    }
+
+    public interface OnStartRefreshAnimListener {
+        void onStart();
     }
 
     private class ICircleImageView extends android.support.v7.widget.AppCompatImageView {

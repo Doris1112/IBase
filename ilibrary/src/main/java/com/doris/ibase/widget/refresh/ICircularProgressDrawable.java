@@ -36,7 +36,8 @@ class ICircularProgressDrawable extends Drawable {
     private int mArrowWidth;
     private int mArrowHeight;
     private int mAlpha = 255;
-    private int mCurrentColor;
+    private int mOutsideColor = Color.BLACK;
+    private int mInsideColor = mOutsideColor;
     private int mCountDownTimeTotal = 1000;
     private float mOutsideArcAngle = 300f;
     private float mDefaultStartAngle = 105f;
@@ -143,9 +144,12 @@ class ICircularProgressDrawable extends Drawable {
         invalidateSelf();
     }
 
-    void setColor(int color) {
-        mCurrentColor = color;
-        invalidateSelf();
+    void setOutsideColor(int color) {
+        mOutsideColor = color;
+    }
+
+    void setInsideColor(int color){
+        mInsideColor = color;
     }
 
     private void cancel() {
@@ -169,7 +173,7 @@ class ICircularProgressDrawable extends Drawable {
         float startAngle = (mStartTrim + mRotation) * 360.0F;
         float endAngle = (mEndTrim + mRotation) * 360.0F;
         float sweepAngle = endAngle - startAngle;
-        mPaint.setColor(mCurrentColor);
+        mPaint.setColor(mOutsideColor);
         mPaint.setAlpha(mAlpha);
         float inset = mStrokeWidth / 2.0F;
         arcBounds.inset(inset, inset);
@@ -186,6 +190,7 @@ class ICircularProgressDrawable extends Drawable {
         } else {
             mPaint.setStrokeCap(Paint.Cap.ROUND);
             canvas.drawArc(arcBounds, mStartAngle, mOutsideArcAngle, false, mPaint);
+            mPaint.setColor(mInsideColor);
             arcBounds.inset(-inset + 20, -inset + 20);
             canvas.drawArc(arcBounds, (360 - mStartAngle),
                     360 - mOutsideArcAngle, false, mPaint);
@@ -208,7 +213,7 @@ class ICircularProgressDrawable extends Drawable {
         mArrow.offset(centerRadius + bounds.centerX() - inset,
                 bounds.centerY() + mStrokeWidth / 2.0F);
         mArrow.close();
-        mArrowPaint.setColor(mCurrentColor);
+        mArrowPaint.setColor(mOutsideColor);
         mArrowPaint.setAlpha(mAlpha);
         c.save();
         c.rotate(startAngle + sweepAngle, bounds.centerX(), bounds.centerY());

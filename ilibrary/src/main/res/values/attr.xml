@@ -16,8 +16,10 @@
     </declare-styleable>
     <declare-styleable name="IRefreshLayout">
         <!-- 是否需要刷新 -->
-        <attr name="needRefresh" format="boolean" />
-        <!-- 刷新圆弧的颜色 -->
-        <attr name="progressColor" format="color" />
+        <attr name="need_refresh" format="boolean" />
+        <!--外层圆弧的颜色-->
+        <attr name="progress_outside_color" format="color" />
+        <!--内层圆弧的颜色-->
+        <attr name="progress_inside_color" format="color" />
     </declare-styleable>
 </resources>

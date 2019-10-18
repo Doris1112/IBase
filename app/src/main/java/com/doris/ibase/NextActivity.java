@@ -3,6 +3,7 @@ package com.doris.ibase;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.doris.ibase.activities.IBaseAppCompatActivity;
 import com.doris.ibase.adapter.IBaseRecyclerAdapter;
 import com.doris.ibase.adapter.IBaseViewHolder;
 import com.doris.ibase.utils.IToastUtils;
+import com.doris.ibase.widget.refresh.IRefreshLayout;
 
 /**
  * @author Doris
@@ -20,6 +22,7 @@ import com.doris.ibase.utils.IToastUtils;
 public class NextActivity extends IBaseAppCompatActivity implements
         IBaseRecyclerAdapter.OnLoadMoreListener {
 
+    private IRefreshLayout mRefreshLayout;
     private RecyclerView mRecyclerView;
     private int mPageIndex = 1;
     private PoetryAdapter mAdapter;
@@ -32,6 +35,28 @@ public class NextActivity extends IBaseAppCompatActivity implements
     @Override
     protected void initWidget() {
         super.initWidget();
+        mRefreshLayout = findViewById(R.id.refreshLayout);
+        mRefreshLayout.setOnStartRefreshAnimListener(new IRefreshLayout.OnStartRefreshAnimListener() {
+            @Override
+            public void onStart() {
+                mAdapter.currentRefresh();
+                Log.d("recycler", "onStart: 正在刷新");
+            }
+        });
+        mRefreshLayout.setOnRefreshListener(new IRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPageIndex = 1;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setDataList(Poetry.getPoetry1());
+                        mAdapter.canLoadMore();
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                }, 5000);
+            }
+        });
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PoetryAdapter(this);
@@ -53,7 +78,6 @@ public class NextActivity extends IBaseAppCompatActivity implements
         });
         mAdapter.needLoadMore(false, mRecyclerView, this);
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.startLoadMore();
     }
 
     private void addHeader() {
@@ -115,13 +139,12 @@ public class NextActivity extends IBaseAppCompatActivity implements
 
     @Override
     public void onLoadMore() {
+        Log.d("recycler", "onLoadMore: 正在加载更多");
+        mRefreshLayout.setEnabled(false);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mPageIndex == 1){
-                    mAdapter.setDataList(Poetry.getPoetry());
-                    mAdapter.canLoadMore();
-                } else if (mPageIndex == 3) {
+                if (mPageIndex == 3) {
                     mAdapter.loadMoreError();
                 } else if (mPageIndex > 3) {
                     mAdapter.stopLoadMore();
@@ -130,6 +153,7 @@ public class NextActivity extends IBaseAppCompatActivity implements
                     mAdapter.canLoadMore();
                 }
                 mPageIndex ++;
+                mRefreshLayout.setEnabled(true);
             }
         },5000);
     }
