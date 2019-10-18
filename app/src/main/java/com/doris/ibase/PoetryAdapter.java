@@ -9,7 +9,8 @@ import com.doris.ibase.adapter.IBaseRecyclerAdapter;
 import com.doris.ibase.adapter.IBaseViewHolder;
 
 /**
- * Created by Doris on 2018/10/27.
+ * @author Doris
+ * @date 018/10/27
  */
 public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry> {
 

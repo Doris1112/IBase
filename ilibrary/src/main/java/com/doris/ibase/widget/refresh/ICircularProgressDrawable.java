@@ -1,4 +1,4 @@
-package com.doris.ibase.refresh;
+package com.doris.ibase.widget.refresh;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -48,7 +48,7 @@ class ICircularProgressDrawable extends Drawable {
         float screenDensity = metrics.density;
         mStrokeWidth = (float) (2.5 * screenDensity);
         mPaint.setStrokeWidth(mStrokeWidth);
-        mRingCenterRadius = (float) (7.5 * screenDensity);
+        mRingCenterRadius = (float) (9.5 * screenDensity);
         mArrowWidth = (int) (10.0 * screenDensity);
         mArrowHeight = (int) (5.0 * screenDensity);
         init();
@@ -125,9 +125,6 @@ class ICircularProgressDrawable extends Drawable {
     void setArrowEnabled(boolean show) {
         mShowArrow = show;
         invalidateSelf();
-        if (!show) {
-            mCountDownTimer.start();
-        }
     }
 
     void setArrowScale(float scale) {
@@ -157,7 +154,7 @@ class ICircularProgressDrawable extends Drawable {
         }
     }
 
-    private void onDraw(Canvas c, Rect bounds) {
+    private void onDraw(Canvas canvas, Rect bounds) {
         RectF arcBounds = mTempBounds;
         float arcRadius = mRingCenterRadius + mStrokeWidth / 2.0F;
         if (mRingCenterRadius <= 0.0F) {
@@ -176,19 +173,22 @@ class ICircularProgressDrawable extends Drawable {
         mPaint.setAlpha(mAlpha);
         float inset = mStrokeWidth / 2.0F;
         arcBounds.inset(inset, inset);
-        c.drawCircle(arcBounds.centerX(), arcBounds.centerY(),
+        canvas.drawCircle(arcBounds.centerX(), arcBounds.centerY(),
                 arcBounds.width() / 2.0F, mCirclePaint);
         arcBounds.inset(-inset, -inset);
         if (mShowArrow) {
             mPaint.setStrokeCap(Paint.Cap.SQUARE);
-            c.drawArc(arcBounds, startAngle, sweepAngle, false, mPaint);
-            drawTriangle(c, startAngle, sweepAngle, arcBounds);
+            canvas.drawArc(arcBounds, startAngle, sweepAngle, false, mPaint);
+            drawTriangle(canvas, startAngle, sweepAngle, arcBounds);
             mStartAngle = startAngle;
             mDefaultStartAngle = startAngle;
             mOutsideArcAngle = sweepAngle;
         } else {
             mPaint.setStrokeCap(Paint.Cap.ROUND);
-            c.drawArc(arcBounds, mStartAngle, mOutsideArcAngle, false, mPaint);
+            canvas.drawArc(arcBounds, mStartAngle, mOutsideArcAngle, false, mPaint);
+            arcBounds.inset(-inset + 20, -inset + 20);
+            canvas.drawArc(arcBounds, (360 - mStartAngle),
+                    360 - mOutsideArcAngle, false, mPaint);
         }
     }
 

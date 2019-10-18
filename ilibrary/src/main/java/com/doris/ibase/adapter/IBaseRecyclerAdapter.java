@@ -1,6 +1,7 @@
 package com.doris.ibase.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,19 +26,42 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         implements View.OnClickListener, View.OnLongClickListener,
         IHolderUpdateCallback<Data> {
 
+    private Context mContext;
+    /**
+     * 数据
+     */
     private LinkedList<Data> mDataList;
+    /**
+     * 头部
+     */
     private LinkedList<ItemView> mHeaderList = new LinkedList<>();
+    /**
+     * 底部
+     */
     private LinkedList<ItemView> mFooterList = new LinkedList<>();
     private final Object mLock = new Object();
+    /**
+     * 对数据增删改是否进行刷新
+     */
     private boolean mNotifyOnChange = true;
-
+    /**
+     * Item点击事件
+     */
     private OnItemClickListener<Data> mItemClickListener;
+    /**
+     * Item长按事件
+     */
     private OnItemLongClickListener<Data> mItemLongClickListener;
-
-    private Context mContext;
-
+    /**
+     * 加载更多；
+     * mNeedLoadMore：是否需要加载更多；
+     * mLoadMoreIsLast：加载跟多是否需要放到最后面（有底部时起作用，放到底部下面）
+     * mLoadMoreHolder：加载更多Holder，默认IDefaultLoadMoreHolder；
+     * mLoadMoreRecycler: 需要加载更多的RecyclerView
+     */
     private boolean mNeedLoadMore = false, mLoadMoreIsLast = true;
     private IBaseLoadMoreHolder mLoadMoreHolder;
+    private RecyclerView mLoadMoreRecycler;
 
     public static abstract class ItemView {
         protected abstract View onCreateView(ViewGroup parent);
@@ -196,8 +220,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 添加头部
-     *
-     * @param view
      */
     public void addHeader(ItemView view) {
         if (view != null) {
@@ -208,8 +230,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 添加底部
-     *
-     * @param view
      */
     public void addFooter(ItemView view) {
         if (view != null) {
@@ -246,9 +266,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标获取头部
-     *
-     * @param index
-     * @return
      */
     public ItemView getHeader(int index) {
         if (index >= 0 && getHeaderCount() > index) {
@@ -259,9 +276,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标获取底部
-     *
-     * @param index
-     * @return
      */
     public ItemView getFooter(int index) {
         if (index >= 0 && getFooterCount() > index) {
@@ -272,8 +286,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取头部集合大小
-     *
-     * @return
      */
     public int getHeaderCount() {
         return mHeaderList.size();
@@ -281,8 +293,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取底部集合大小
-     *
-     * @return
      */
     public int getFooterCount() {
         return mFooterList.size();
@@ -290,8 +300,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取头部集合
-     *
-     * @return
      */
     public LinkedList<ItemView> getHeaders() {
         return mHeaderList;
@@ -299,8 +307,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取底部集合
-     *
-     * @return
      */
     public LinkedList<ItemView> getFooters() {
         return mFooterList;
@@ -308,8 +314,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 移除指定头部数据
-     *
-     * @param view
      */
     public void removeHeader(ItemView view) {
         removeHeader(mHeaderList.indexOf(view));
@@ -317,8 +321,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 移除指定底部数据
-     *
-     * @param view
      */
     public void removeFooter(ItemView view) {
         removeFooter(mFooterList.indexOf(view));
@@ -326,8 +328,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除头部数据
-     *
-     * @param index
      */
     public void removeHeader(int index) {
         if (index >= 0 && getHeaderCount() > index) {
@@ -338,8 +338,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除底部数据
-     *
-     * @param index
      */
     public void removeFooter(int index) {
         if (index >= 0 && getFooterCount() > index) {
@@ -354,8 +352,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取数据集合
-     *
-     * @return
      */
     public LinkedList<Data> getDataList() {
         return mDataList;
@@ -363,8 +359,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 获取数据大小
-     *
-     * @return
      */
     public int getCount() {
         return mDataList.size();
@@ -372,9 +366,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标获取数据
-     *
-     * @param index
-     * @return
      */
     public Data getItem(int index) {
         if (index >= 0 && getCount() > index) {
@@ -385,8 +376,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 添加一条数据
-     *
-     * @param data
      */
     public void addFirst(Data data) {
         if (data != null) {
@@ -397,15 +386,10 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         if (mNotifyOnChange) {
             notifyItemInserted(getHeaderCount());
         }
-        if (mNeedLoadMore) {
-            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
-        }
     }
 
     /**
      * 添加一条数据
-     *
-     * @param data
      */
     public void add(Data data) {
         if (data != null) {
@@ -416,15 +400,10 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         if (mNotifyOnChange) {
             notifyItemInserted(getHeaderCount() + getCount() + 1);
         }
-        if (mNeedLoadMore) {
-            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
-        }
     }
 
     /**
      * 添加多条数据
-     *
-     * @param dataList
      */
     public void add(Collection<? extends Data> dataList) {
         if (dataList != null && dataList.size() > 0) {
@@ -436,17 +415,11 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
                         getHeaderCount() + getCount() - dataList.size() + 1,
                         dataList.size());
             }
-            if (mNeedLoadMore) {
-                mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
-            }
         }
-
     }
 
     /**
      * 移除一条数据
-     *
-     * @param data
      */
     public void remove(Data data) {
         if (data != null) {
@@ -457,8 +430,6 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
 
     /**
      * 根据下标移除一条数据
-     *
-     * @param position
      */
     public void remove(int position) {
         if (position >= 0 && getCount() > position) {
@@ -467,6 +438,9 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
             }
             if (mNotifyOnChange) {
                 notifyItemRemoved(getHeaderCount() + position);
+            }
+            if (mNeedLoadMore){
+                updateLoadMoreState();
             }
         }
     }
@@ -482,6 +456,50 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         if (mNotifyOnChange) {
             notifyItemRangeRemoved(getHeaderCount(), count);
         }
+        if (mNeedLoadMore){
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
+        }
+    }
+
+    /**
+     * 修改数据集合
+     */
+    public void setDataList(Collection<? extends Data> dataList){
+        int count = getCount();
+        synchronized (mLock) {
+            mDataList.clear();
+        }
+        if (mNotifyOnChange) {
+            notifyItemRangeRemoved(getHeaderCount(), count);
+        }
+        if (dataList != null && dataList.size() > 0) {
+            synchronized (mLock) {
+                mDataList.addAll(dataList);
+            }
+            if (mNotifyOnChange) {
+                notifyItemRangeInserted(
+                        getHeaderCount() + getCount() - dataList.size() + 1,
+                        dataList.size());
+            }
+        }
+    }
+
+    public void setDataList(Data data){
+        int count = getCount();
+        synchronized (mLock) {
+            mDataList.clear();
+        }
+        if (mNotifyOnChange) {
+            notifyItemRangeRemoved(getHeaderCount(), count);
+        }
+        if (data != null) {
+            synchronized (mLock) {
+                mDataList.add(data);
+            }
+        }
+        if (mNotifyOnChange) {
+            notifyItemInserted(getHeaderCount() + getCount() + 1);
+        }
     }
 
     /**
@@ -491,69 +509,73 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         needLoadMore(true, recyclerView, listener);
     }
 
-    /**
-     * 是否需要加载更多
-     */
     public void needLoadMore(boolean loadMoreIsLast, RecyclerView recyclerView, OnLoadMoreListener listener) {
         needLoadMore(loadMoreIsLast, recyclerView, new IDefaultLoadMoreHolder(), listener);
     }
 
-    /**
-     * 是否需要加载更多
-     */
     public void needLoadMore(boolean loadMoreIsLast, RecyclerView recyclerView,
                              IBaseLoadMoreHolder loadMoreHolder, OnLoadMoreListener listener) {
-        mLoadMoreIsLast = loadMoreIsLast;
         mNeedLoadMore = true;
+        mLoadMoreIsLast = loadMoreIsLast;
+        mLoadMoreRecycler = recyclerView;
         mLoadMoreHolder = loadMoreHolder;
         mLoadMoreHolder.setOnLoadMoreListener(listener);
-        initLoadMore(recyclerView);
+        initLoadMore();
     }
 
-    private void initLoadMore(RecyclerView recyclerView) {
-        if (recyclerView == null) {
+    private void initLoadMore() {
+        if (mLoadMoreRecycler == null) {
             return;
         }
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mLoadMoreRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     // 当前并不处于滑动状态
-                    int lastVisiblePosition;
-                    RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-                    if (layoutManager instanceof GridLayoutManager) {
-                        lastVisiblePosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
-                    } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                        int into[] = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
-                        ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(into);
-                        lastVisiblePosition = findMax(into);
-                    } else {
-                        lastVisiblePosition = ((LinearLayoutManager) layoutManager)
-                                .findLastCompletelyVisibleItemPosition();
-                    }
-                    if (getCount() == 0) {
-                        mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
-                        return;
-                    }
-                    int lastItemPosition;
-                    if (mLoadMoreIsLast) {
-                        lastItemPosition = layoutManager.getItemCount() - 1;
-                    } else {
-                        lastItemPosition = layoutManager.getItemCount() - getFooterCount() - 1;
-                    }
-                    if (layoutManager.getChildCount() > 0
-                            && lastVisiblePosition >= lastItemPosition
-                            && layoutManager.getItemCount() > layoutManager.getChildCount()) {
-                        if (mLoadMoreHolder.getLoadMoreState()
-                                != IBaseLoadMoreHolder.STATE_LOAD_MORE_NO) {
-                            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
-                            mLoadMoreHolder.onLoadMore();
-                        }
-                    }
+                    updateLoadMoreState();
                 }
             }
         });
+        if (getCount() == 0) {
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
+        }
+    }
+
+    private void updateLoadMoreState(){
+        if (mLoadMoreRecycler == null){
+            return;
+        }
+        int lastVisiblePosition;
+        RecyclerView.LayoutManager layoutManager = mLoadMoreRecycler.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+        if (layoutManager instanceof GridLayoutManager) {
+            lastVisiblePosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
+        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+            int[] spanCount = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
+            ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(spanCount);
+            lastVisiblePosition = findMax(spanCount);
+        } else {
+            lastVisiblePosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+        }
+        if (getCount() == 0) {
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_EMPTY);
+            return;
+        }
+        int lastItemPosition;
+        if (mLoadMoreIsLast) {
+            lastItemPosition = layoutManager.getItemCount() - 1;
+        } else {
+            lastItemPosition = layoutManager.getItemCount() - getFooterCount() - 1;
+        }
+        if (lastVisiblePosition >= lastItemPosition) {
+            if (mLoadMoreHolder.canLoadMore()) {
+                mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
+                mLoadMoreHolder.onLoadMore();
+            }
+        }
     }
 
     private int findMax(int[] lastPositions) {
@@ -567,9 +589,45 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     }
 
     /**
-     * 停止加载更多（没有更多了）
+     * 设置当前正在刷新
      */
-    public void loadMoreStop() {
+    public void currentRefresh(){
+        if (mNeedLoadMore) {
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_CURRENT_REFRESH);
+        }
+    }
+
+    /**
+     * 开始加载更多
+     */
+    public void startLoadMore(){
+        if (mNeedLoadMore){
+            if (mLoadMoreHolder.canLoadMore()) {
+                mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
+                mLoadMoreHolder.onLoadMore();
+            }
+        }
+    }
+
+    /**
+     * 可以加载更多
+     */
+    public void canLoadMore(){
+        if (mNeedLoadMore){
+            mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_UP);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateLoadMoreState();
+                }
+            }, 500);
+        }
+    }
+
+    /**
+     * （不能）停止加载更多
+     */
+    public void stopLoadMore() {
         if (mNeedLoadMore) {
             mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE_NO);
         }

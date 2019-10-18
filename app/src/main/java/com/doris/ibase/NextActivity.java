@@ -3,7 +3,6 @@ package com.doris.ibase;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +11,15 @@ import android.widget.ImageView;
 import com.doris.ibase.activities.IBaseAppCompatActivity;
 import com.doris.ibase.adapter.IBaseRecyclerAdapter;
 import com.doris.ibase.adapter.IBaseViewHolder;
-import com.doris.ibase.refresh.IRefreshLayout;
 import com.doris.ibase.utils.IToastUtils;
 
 /**
- * Created by Doris on 2018/9/22.
+ * @author Doris
+ * @date 2018/9/22
  */
-public class NextActivity extends IBaseAppCompatActivity implements View.OnClickListener,
+public class NextActivity extends IBaseAppCompatActivity implements
         IBaseRecyclerAdapter.OnLoadMoreListener {
 
-    private static final String TAG = NextActivity.class.getSimpleName();
-
-    private IRefreshLayout mRefreshLayout;
     private RecyclerView mRecyclerView;
     private int mPageIndex = 1;
     private PoetryAdapter mAdapter;
@@ -36,23 +32,6 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
     @Override
     protected void initWidget() {
         super.initWidget();
-        mRefreshLayout = findViewById(R.id.refreshLayout);
-        mRefreshLayout.setOnRefreshListener(new IRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d(TAG, "onRefresh: ");
-                mPageIndex = 1;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.clear();
-                        mAdapter.add(Poetry.getPoetry());
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                },5000);
-            }
-        });
-
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PoetryAdapter(this);
@@ -74,6 +53,7 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
         });
         mAdapter.needLoadMore(false, mRecyclerView, this);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.startLoadMore();
     }
 
     private void addHeader() {
@@ -134,24 +114,22 @@ public class NextActivity extends IBaseAppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void onClick(View v) {
-        mRefreshLayout.setRefreshing(true);
-    }
-
-    @Override
     public void onLoadMore() {
-        Log.d(TAG, "onLoadMore: ");
-        mPageIndex ++;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mPageIndex == 4) {
+                if (mPageIndex == 1){
+                    mAdapter.setDataList(Poetry.getPoetry());
+                    mAdapter.canLoadMore();
+                } else if (mPageIndex == 3) {
                     mAdapter.loadMoreError();
-                } else if (mPageIndex > 4) {
-                    mAdapter.loadMoreStop();
+                } else if (mPageIndex > 3) {
+                    mAdapter.stopLoadMore();
                 } else {
-                    mAdapter.add(Poetry.getPoetry());
+                    mAdapter.add(Poetry.getPoetry1());
+                    mAdapter.canLoadMore();
                 }
+                mPageIndex ++;
             }
         },5000);
     }

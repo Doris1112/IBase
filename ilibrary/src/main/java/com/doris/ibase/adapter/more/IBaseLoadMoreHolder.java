@@ -15,12 +15,13 @@ import java.lang.ref.WeakReference;
  */
 public abstract class IBaseLoadMoreHolder {
 
-    int mState = STATE_LOAD_MORE_EMPTY;
+    protected int mState = -1;
     public static final int STATE_LOAD_MORE_EMPTY = 0;
     public static final int STATE_LOAD_MORE_UP = 1;
     public static final int STATE_LOAD_MORE = 2;
     public static final int STATE_LOAD_MORE_ERROR = 3;
     public static final int STATE_LOAD_MORE_NO = 4;
+    public static final int STATE_LOAD_MORE_CURRENT_REFRESH = 5;
 
     private IBaseRecyclerAdapter.OnLoadMoreListener mLoadMoreListener;
     private NotifyLoadMoreChangedHandler mHandler = new NotifyLoadMoreChangedHandler(this);
@@ -42,6 +43,14 @@ public abstract class IBaseLoadMoreHolder {
      */
     public int getLoadMoreState() {
         return mState;
+    }
+
+    /**
+     * 当前状态是否能加载更多
+     */
+    public boolean canLoadMore(){
+        return mState != STATE_LOAD_MORE && mState != STATE_LOAD_MORE_NO &&
+                mState != STATE_LOAD_MORE_CURRENT_REFRESH;
     }
 
     public abstract void notifyLoadMoreChanged();
@@ -68,7 +77,7 @@ public abstract class IBaseLoadMoreHolder {
 
         private final WeakReference<IBaseLoadMoreHolder> mTarget;
 
-        NotifyLoadMoreChangedHandler(IBaseLoadMoreHolder target){
+        NotifyLoadMoreChangedHandler(IBaseLoadMoreHolder target) {
             mTarget = new WeakReference<>(target);
         }
 

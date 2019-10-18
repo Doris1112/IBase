@@ -1,11 +1,10 @@
-package com.doris.ibase.refresh;
+package com.doris.ibase.widget.refresh;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.NestedScrollingChild;
@@ -25,6 +24,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.ListView;
+
+import com.doris.ibase.ilibrary.R;
 
 /**
  * @author Doris
@@ -51,52 +52,19 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
     private int mActivePointerId;
     private boolean mReturningToStart;
     private final DecelerateInterpolator mDecelerateInterpolator;
-    private static final int[] LAYOUT_ATTRS = new int[]{16842766};
     private ICircleImageView mCircleView;
     private ICircularProgressDrawable mProgress;
     private int mCircleViewIndex;
     protected int mFrom;
-    private float mStartingScale;
     protected int mOriginalOffsetTop;
     private int mSpinnerOffsetEnd;
-    private Animation mScaleAnimation;
-    private Animation mScaleDownAnimation;
     private Animation mAlphaStartAnimation;
     private Animation mAlphaMaxAnimation;
-    private Animation mScaleDownToStartAnimation;
     private boolean mNotify;
     private int mCircleDiameter;
-    private IRefreshLayout.OnChildScrollUpCallback mChildScrollUpCallback;
     private Animation.AnimationListener mRefreshListener;
     private final Animation mAnimateToCorrectPosition;
     private final Animation mAnimateToStartPosition;
-
-    void reset() {
-        mCircleView.clearAnimation();
-        mProgress.stop();
-        mCircleView.setVisibility(View.GONE);
-        setColorViewAlpha(255);
-        setTargetOffsetTopAndBottom(mOriginalOffsetTop - mCurrentTargetOffsetTop);
-
-        mCurrentTargetOffsetTop = mCircleView.getTop();
-    }
-
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled) {
-            reset();
-        }
-    }
-
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        reset();
-    }
-
-    private void setColorViewAlpha(int targetAlpha) {
-        mCircleView.getBackground().setAlpha(targetAlpha);
-        mProgress.setAlpha(targetAlpha);
-    }
 
     public IRefreshLayout(@NonNull Context context) {
         this(context, null);
@@ -160,151 +128,10 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         setNestedScrollingEnabled(true);
         mOriginalOffsetTop = mCurrentTargetOffsetTop = -mCircleDiameter;
         moveToStart(1.0F);
-        TypedArray a = context.obtainStyledAttributes(attrs, LAYOUT_ATTRS);
-        setEnabled(a.getBoolean(0, true));
-        a.recycle();
-    }
-
-    protected int getChildDrawingOrder(int childCount, int i) {
-        if (mCircleViewIndex < 0) {
-            return i;
-        } else if (i == childCount - 1) {
-            return mCircleViewIndex;
-        } else {
-            return i >= mCircleViewIndex ? i + 1 : i;
-        }
-    }
-
-    private void createProgressView() {
-        mCircleView = new ICircleImageView(getContext());
-        mProgress = new ICircularProgressDrawable(getContext());
-        mCircleView.setImageDrawable(mProgress);
-        mCircleView.setVisibility(View.GONE);
-        addView(mCircleView);
-    }
-
-    public void setOnRefreshListener(@Nullable IRefreshLayout.OnRefreshListener listener) {
-        mListener = listener;
-    }
-
-    public void setRefreshing(boolean refreshing) {
-        if (refreshing && !mRefreshing) {
-            mRefreshing = true;
-            int endTarget = mSpinnerOffsetEnd + mOriginalOffsetTop;
-            setTargetOffsetTopAndBottom(endTarget - mCurrentTargetOffsetTop);
-            mNotify = false;
-            startScaleUpAnimation(mRefreshListener);
-        } else {
-            setRefreshing(refreshing, false);
-        }
-    }
-
-    private void startScaleUpAnimation(Animation.AnimationListener listener) {
-        mCircleView.setVisibility(View.VISIBLE);
-        mProgress.setAlpha(255);
-        mScaleAnimation = new Animation() {
-            public void applyTransformation(float interpolatedTime, Transformation t) {
-                setAnimationProgress(interpolatedTime);
-            }
-        };
-        mScaleAnimation.setDuration((long) mMediumAnimationDuration);
-        if (listener != null) {
-            mCircleView.setAnimationListener(listener);
-        }
-
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(mScaleAnimation);
-    }
-
-    void setAnimationProgress(float progress) {
-        mCircleView.setScaleX(progress);
-        mCircleView.setScaleY(progress);
-    }
-
-    private void setRefreshing(boolean refreshing, boolean notify) {
-        if (mRefreshing != refreshing) {
-            mNotify = notify;
-            ensureTarget();
-            mRefreshing = refreshing;
-            if (mRefreshing) {
-                animateOffsetToCorrectPosition(mCurrentTargetOffsetTop, mRefreshListener);
-            } else {
-                startScaleDownAnimation(mRefreshListener);
-            }
-        }
-
-    }
-
-    void startScaleDownAnimation(Animation.AnimationListener listener) {
-        mScaleDownAnimation = new Animation() {
-            public void applyTransformation(float interpolatedTime, Transformation t) {
-                setAnimationProgress(1.0F - interpolatedTime);
-            }
-        };
-        mScaleDownAnimation.setDuration(150L);
-        mCircleView.setAnimationListener(listener);
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(mScaleDownAnimation);
-    }
-
-    private void startProgressAlphaStartAnimation() {
-        mAlphaStartAnimation = startAlphaAnimation(mProgress.getAlpha(), 76);
-    }
-
-    private void startProgressAlphaMaxAnimation() {
-        mAlphaMaxAnimation = startAlphaAnimation(mProgress.getAlpha(), 255);
-    }
-
-    private Animation startAlphaAnimation(final int startingAlpha, final int endingAlpha) {
-        Animation alpha = new Animation() {
-            public void applyTransformation(float interpolatedTime, Transformation t) {
-                mProgress.setAlpha((int) ((float) startingAlpha + (float) (endingAlpha - startingAlpha) * interpolatedTime));
-            }
-        };
-        alpha.setDuration(300L);
-        mCircleView.setAnimationListener(null);
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(alpha);
-        return alpha;
-    }
-
-    public boolean isRefreshing() {
-        return mRefreshing;
-    }
-
-    private void ensureTarget() {
-        if (mTarget == null) {
-            for (int i = 0; i < getChildCount(); ++i) {
-                View child = getChildAt(i);
-                if (!child.equals(mCircleView)) {
-                    mTarget = child;
-                    break;
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
-        if (getChildCount() != 0) {
-            if (mTarget == null) {
-                ensureTarget();
-            }
-
-            if (mTarget != null) {
-                View child = mTarget;
-                int childLeft = getPaddingLeft();
-                int childTop = getPaddingTop();
-                int childWidth = width - getPaddingLeft() - getPaddingRight();
-                int childHeight = height - getPaddingTop() - getPaddingBottom();
-                child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
-                int circleWidth = mCircleView.getMeasuredWidth();
-                int circleHeight = mCircleView.getMeasuredHeight();
-                mCircleView.layout(width / 2 - circleWidth / 2, mCurrentTargetOffsetTop, width / 2 + circleWidth / 2, mCurrentTargetOffsetTop + circleHeight);
-            }
-        }
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.IRefreshLayout);
+        setEnabled(array.getBoolean(R.styleable.IRefreshLayout_needRefresh, true));
+        setProgressColor(array.getColor(R.styleable.IRefreshLayout_progressColor, Color.BLACK));
+        array.recycle();
     }
 
     @Override
@@ -326,26 +153,61 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         }
     }
 
-    public boolean canChildScrollUp() {
-        if (mChildScrollUpCallback != null) {
-            return mChildScrollUpCallback.canChildScrollUp(this, mTarget);
-        } else {
-            return mTarget instanceof ListView ? ListViewCompat.canScrollList((ListView) mTarget, -1) : mTarget.canScrollVertically(-1);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+        if (getChildCount() != 0) {
+            if (mTarget == null) {
+                ensureTarget();
+            }
+            if (mTarget != null) {
+                View child = mTarget;
+                int childLeft = getPaddingLeft();
+                int childTop = getPaddingTop();
+                int childWidth = width - getPaddingLeft() - getPaddingRight();
+                int childHeight = height - getPaddingTop() - getPaddingBottom();
+                child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
+                int circleWidth = mCircleView.getMeasuredWidth();
+                int circleHeight = mCircleView.getMeasuredHeight();
+                mCircleView.layout(width / 2 - circleWidth / 2, mCurrentTargetOffsetTop, width / 2 + circleWidth / 2, mCurrentTargetOffsetTop + circleHeight);
+            }
         }
     }
 
-    public void setOnChildScrollUpCallback(@Nullable IRefreshLayout.OnChildScrollUpCallback callback) {
-        mChildScrollUpCallback = callback;
+    @Override
+    protected int getChildDrawingOrder(int childCount, int i) {
+        if (mCircleViewIndex < 0) {
+            return i;
+        } else if (i == childCount - 1) {
+            return mCircleViewIndex;
+        } else {
+            return i >= mCircleViewIndex ? i + 1 : i;
+        }
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (!enabled) {
+            reset();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        reset();
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         ensureTarget();
         int action = ev.getActionMasked();
         if (mReturningToStart && action == 0) {
             mReturningToStart = false;
         }
-
-        if (isEnabled() && !mReturningToStart && !canChildScrollUp() && !mRefreshing && !mNestedScrollInProgress) {
+        if (isEnabled() && !mReturningToStart && noCanChildScrollUp() && !mRefreshing && !mNestedScrollInProgress) {
             int pointerIndex;
             switch (action) {
                 case 0:
@@ -380,23 +242,26 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
                 case 6:
                     onSecondaryPointerUp(ev);
             }
-
             return mIsBeingDragged;
         } else {
             return false;
         }
     }
 
+    @Override
     public void requestDisallowInterceptTouchEvent(boolean b) {
-        if ((Build.VERSION.SDK_INT >= 21 || !(mTarget instanceof AbsListView)) && (mTarget == null || ViewCompat.isNestedScrollingEnabled(mTarget))) {
+        if (!(mTarget instanceof AbsListView) &&
+                (mTarget == null || ViewCompat.isNestedScrollingEnabled(mTarget))) {
             super.requestDisallowInterceptTouchEvent(b);
         }
     }
 
-    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+    @Override
+    public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int nestedScrollAxes) {
         return isEnabled() && !mReturningToStart && !mRefreshing && (nestedScrollAxes & 2) != 0;
     }
 
+    @Override
     public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int axes) {
         mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, axes);
         startNestedScroll(axes & 2);
@@ -404,6 +269,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         mNestedScrollInProgress = true;
     }
 
+    @Override
     public void onNestedPreScroll(@NonNull View target, int dx, int dy, @NonNull int[] consumed) {
         if (dy > 0 && mTotalUnconsumed > 0.0F) {
             if ((float) dy > mTotalUnconsumed) {
@@ -415,18 +281,20 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             }
             moveSpinner(mTotalUnconsumed);
         }
-
         int[] parentConsumed = mParentScrollConsumed;
-        if (dispatchNestedPreScroll(dx - consumed[0], dy - consumed[1], parentConsumed, (int[]) null)) {
+        if (dispatchNestedPreScroll(dx - consumed[0],
+                dy - consumed[1], parentConsumed, null)) {
             consumed[0] += parentConsumed[0];
             consumed[1] += parentConsumed[1];
         }
     }
 
+    @Override
     public int getNestedScrollAxes() {
         return mNestedScrollingParentHelper.getNestedScrollAxes();
     }
 
+    @Override
     public void onStopNestedScroll(@NonNull View target) {
         mNestedScrollingParentHelper.onStopNestedScroll(target);
         mNestedScrollInProgress = false;
@@ -437,62 +305,270 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         stopNestedScroll();
     }
 
+    @Override
     public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, mParentOffsetInWindow);
         int dy = dyUnconsumed + mParentOffsetInWindow[1];
-        if (dy < 0 && !canChildScrollUp()) {
+        if (dy < 0 && noCanChildScrollUp()) {
             mTotalUnconsumed += (float) Math.abs(dy);
             moveSpinner(mTotalUnconsumed);
         }
-
     }
 
+    @Override
     public void setNestedScrollingEnabled(boolean enabled) {
         mNestedScrollingChildHelper.setNestedScrollingEnabled(enabled);
     }
 
+    @Override
     public boolean isNestedScrollingEnabled() {
         return mNestedScrollingChildHelper.isNestedScrollingEnabled();
     }
 
+    @Override
     public boolean startNestedScroll(int axes) {
         return mNestedScrollingChildHelper.startNestedScroll(axes);
     }
 
+    @Override
     public void stopNestedScroll() {
         mNestedScrollingChildHelper.stopNestedScroll();
     }
 
+    @Override
     public boolean hasNestedScrollingParent() {
         return mNestedScrollingChildHelper.hasNestedScrollingParent();
     }
 
+    @Override
     public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
         return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
     }
 
+    @Override
     public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
         return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
     }
 
+    @Override
     public boolean onNestedPreFling(@NonNull View target, float velocityX, float velocityY) {
         return dispatchNestedPreFling(velocityX, velocityY);
     }
 
+    @Override
     public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
         return dispatchNestedFling(velocityX, velocityY, consumed);
     }
 
+    @Override
     public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
         return mNestedScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
     }
 
+    @Override
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int action = ev.getActionMasked();
+        if (mReturningToStart && action == 0) {
+            mReturningToStart = false;
+        }
+        if (isEnabled() && !mReturningToStart && noCanChildScrollUp() && !mRefreshing
+                && !mNestedScrollInProgress) {
+            float y;
+            float overScrollTop;
+            int pointerIndex;
+            switch (action) {
+                case 0:
+                    mActivePointerId = ev.getPointerId(0);
+                    mIsBeingDragged = false;
+                    break;
+                case 1:
+                    pointerIndex = ev.findPointerIndex(mActivePointerId);
+                    if (pointerIndex < 0) {
+                        return false;
+                    }
+                    if (mIsBeingDragged) {
+                        y = ev.getY(pointerIndex);
+                        overScrollTop = (y - mInitialMotionY) * 0.5F;
+                        mIsBeingDragged = false;
+                        finishSpinner(overScrollTop);
+                    }
+                    mActivePointerId = -1;
+                    return false;
+                case 2:
+                    pointerIndex = ev.findPointerIndex(mActivePointerId);
+                    if (pointerIndex < 0) {
+                        return false;
+                    }
+                    y = ev.getY(pointerIndex);
+                    startDragging(y);
+                    if (mIsBeingDragged) {
+                        overScrollTop = (y - mInitialMotionY) * 0.5F;
+                        if (overScrollTop <= 0.0F) {
+                            return false;
+                        }
+                        moveSpinner(overScrollTop);
+                    }
+                    break;
+                case 3:
+                    return false;
+                case 4:
+                default:
+                    break;
+                case 5:
+                    pointerIndex = ev.getActionIndex();
+                    if (pointerIndex < 0) {
+                        return false;
+                    }
+                    mActivePointerId = ev.getPointerId(pointerIndex);
+                    break;
+                case 6:
+                    onSecondaryPointerUp(ev);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setOnRefreshListener(@Nullable IRefreshLayout.OnRefreshListener listener) {
+        mListener = listener;
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        if (refreshing && !mRefreshing) {
+            mRefreshing = true;
+            int endTarget = mSpinnerOffsetEnd + mOriginalOffsetTop;
+            setTargetOffsetTopAndBottom(endTarget - mCurrentTargetOffsetTop);
+            mNotify = false;
+            startScaleUpAnimation(mRefreshListener);
+        } else {
+            setRefreshing(refreshing, false);
+        }
+    }
+
+    public boolean isRefreshing() {
+        return mRefreshing;
+    }
+
+    public void setProgressColor(int color){
+        mProgress.setColor(color);
+    }
+
+    private boolean noCanChildScrollUp() {
+        return mTarget instanceof ListView ?
+                !ListViewCompat.canScrollList((ListView) mTarget, -1) :
+                !mTarget.canScrollVertically(-1);
+    }
+
+    private void reset() {
+        mCircleView.clearAnimation();
+        mProgress.stop();
+        mCircleView.setVisibility(View.GONE);
+        setColorViewAlpha();
+        setTargetOffsetTopAndBottom(mOriginalOffsetTop - mCurrentTargetOffsetTop);
+        mCurrentTargetOffsetTop = mCircleView.getTop();
+    }
+
+    private void setColorViewAlpha() {
+        mCircleView.getBackground().setAlpha(255);
+        mProgress.setAlpha(255);
+    }
+
+    private void createProgressView() {
+        mCircleView = new ICircleImageView(getContext());
+        mProgress = new ICircularProgressDrawable(getContext());
+        mCircleView.setImageDrawable(mProgress);
+        mCircleView.setVisibility(View.GONE);
+        addView(mCircleView);
+    }
+
+    private void startScaleUpAnimation(Animation.AnimationListener listener) {
+        mCircleView.setVisibility(View.VISIBLE);
+        mProgress.setAlpha(255);
+        Animation scaleAnimation = new Animation() {
+            public void applyTransformation(float interpolatedTime, Transformation t) {
+                setAnimationProgress(interpolatedTime);
+            }
+        };
+        scaleAnimation.setDuration((long) mMediumAnimationDuration);
+        if (listener != null) {
+            mCircleView.setAnimationListener(listener);
+        }
+        mCircleView.clearAnimation();
+        mCircleView.startAnimation(scaleAnimation);
+    }
+
+    private void setAnimationProgress(float progress) {
+        mCircleView.setScaleX(progress);
+        mCircleView.setScaleY(progress);
+    }
+
+    private void setRefreshing(boolean refreshing, boolean notify) {
+        if (mRefreshing != refreshing) {
+            mNotify = notify;
+            ensureTarget();
+            mRefreshing = refreshing;
+            if (mRefreshing) {
+                animateOffsetToCorrectPosition(mCurrentTargetOffsetTop, mRefreshListener);
+            } else {
+                startScaleDownAnimation(mRefreshListener);
+            }
+        }
+
+    }
+
+    private void startScaleDownAnimation(Animation.AnimationListener listener) {
+        Animation scaleDownAnimation = new Animation() {
+            public void applyTransformation(float interpolatedTime, Transformation t) {
+                setAnimationProgress(1.0F - interpolatedTime);
+            }
+        };
+        scaleDownAnimation.setDuration(150L);
+        mCircleView.setAnimationListener(listener);
+        mCircleView.clearAnimation();
+        mCircleView.startAnimation(scaleDownAnimation);
+    }
+
+    private void startProgressAlphaStartAnimation() {
+        mAlphaStartAnimation = startAlphaAnimation(mProgress.getAlpha(), 76);
+    }
+
+    private void startProgressAlphaMaxAnimation() {
+        mAlphaMaxAnimation = startAlphaAnimation(mProgress.getAlpha(), 255);
+    }
+
+    private Animation startAlphaAnimation(final int startingAlpha, final int endingAlpha) {
+        Animation alpha = new Animation() {
+            public void applyTransformation(float interpolatedTime, Transformation t) {
+                mProgress.setAlpha((int) ((float) startingAlpha + (float) (endingAlpha - startingAlpha) * interpolatedTime));
+            }
+        };
+        alpha.setDuration(300L);
+        mCircleView.setAnimationListener(null);
+        mCircleView.clearAnimation();
+        mCircleView.startAnimation(alpha);
+        return alpha;
+    }
+
+    private void ensureTarget() {
+        if (mTarget == null) {
+            for (int i = 0; i < getChildCount(); ++i) {
+                View child = getChildAt(i);
+                if (!child.equals(mCircleView)) {
+                    mTarget = child;
+                    break;
+                }
+            }
+        }
+    }
+
     private boolean isAnimationRunning(Animation animation) {
-        return animation != null && animation.hasStarted() && !animation.hasEnded();
+        return animation == null || !animation.hasStarted() || animation.hasEnded();
     }
 
     private void moveSpinner(float oversScrollTop) {
@@ -511,15 +587,13 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         }
         mCircleView.setScaleX(1.0F);
         mCircleView.setScaleY(1.0F);
-
         if (oversScrollTop < mTotalDragDistance) {
-            if (mProgress.getAlpha() > 76 && !isAnimationRunning(mAlphaStartAnimation)) {
+            if (mProgress.getAlpha() > 76 && isAnimationRunning(mAlphaStartAnimation)) {
                 startProgressAlphaStartAnimation();
             }
-        } else if (mProgress.getAlpha() < 255 && !isAnimationRunning(mAlphaMaxAnimation)) {
+        } else if (mProgress.getAlpha() < 255 && isAnimationRunning(mAlphaMaxAnimation)) {
             startProgressAlphaMaxAnimation();
         }
-
         float strokeStart = adjustedPercent * 0.8F;
         mProgress.setStartEndTrim(Math.min(0.8F, strokeStart));
         mProgress.setArrowScale(Math.min(1.0F, adjustedPercent));
@@ -548,74 +622,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
 
             animateOffsetToStartPosition(mCurrentTargetOffsetTop, listener);
             mProgress.setArrowEnabled(false);
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        int action = ev.getActionMasked();
-        if (mReturningToStart && action == 0) {
-            mReturningToStart = false;
-        }
-
-        if (isEnabled() && !mReturningToStart && !canChildScrollUp() && !mRefreshing && !mNestedScrollInProgress) {
-            float y;
-            float overscrollTop;
-            int pointerIndex;
-            switch (action) {
-                case 0:
-                    mActivePointerId = ev.getPointerId(0);
-                    mIsBeingDragged = false;
-                    break;
-                case 1:
-                    pointerIndex = ev.findPointerIndex(mActivePointerId);
-                    if (pointerIndex < 0) {
-                        return false;
-                    }
-
-                    if (mIsBeingDragged) {
-                        y = ev.getY(pointerIndex);
-                        overscrollTop = (y - mInitialMotionY) * 0.5F;
-                        mIsBeingDragged = false;
-                        finishSpinner(overscrollTop);
-                    }
-
-                    mActivePointerId = -1;
-                    return false;
-                case 2:
-                    pointerIndex = ev.findPointerIndex(mActivePointerId);
-                    if (pointerIndex < 0) {
-                        return false;
-                    }
-
-                    y = ev.getY(pointerIndex);
-                    startDragging(y);
-                    if (mIsBeingDragged) {
-                        overscrollTop = (y - mInitialMotionY) * 0.5F;
-                        if (overscrollTop <= 0.0F) {
-                            return false;
-                        }
-                        moveSpinner(overscrollTop);
-                    }
-                    break;
-                case 3:
-                    return false;
-                case 4:
-                default:
-                    break;
-                case 5:
-                    pointerIndex = ev.getActionIndex();
-                    if (pointerIndex < 0) {
-                        return false;
-                    }
-                    mActivePointerId = ev.getPointerId(pointerIndex);
-                    break;
-                case 6:
-                    onSecondaryPointerUp(ev);
-            }
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -653,32 +659,13 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         mCircleView.startAnimation(mAnimateToStartPosition);
     }
 
-    void moveToStart(float interpolatedTime) {
+    private void moveToStart(float interpolatedTime) {
         int targetTop = mFrom + (int) ((float) (mOriginalOffsetTop - mFrom) * interpolatedTime);
         int offset = targetTop - mCircleView.getTop();
         setTargetOffsetTopAndBottom(offset);
     }
 
-    private void startScaleDownReturnToStartAnimation(int from, Animation.AnimationListener listener) {
-        mFrom = from;
-        mStartingScale = mCircleView.getScaleX();
-        mScaleDownToStartAnimation = new Animation() {
-            public void applyTransformation(float interpolatedTime, Transformation t) {
-                float targetScale = mStartingScale + -mStartingScale * interpolatedTime;
-                setAnimationProgress(targetScale);
-                moveToStart(interpolatedTime);
-            }
-        };
-        mScaleDownToStartAnimation.setDuration(150L);
-        if (listener != null) {
-            mCircleView.setAnimationListener(listener);
-        }
-
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(mScaleDownToStartAnimation);
-    }
-
-    void setTargetOffsetTopAndBottom(int offset) {
+    private void setTargetOffsetTopAndBottom(int offset) {
         mCircleView.bringToFront();
         ViewCompat.offsetTopAndBottom(mCircleView, offset);
         mCurrentTargetOffsetTop = mCircleView.getTop();
@@ -691,11 +678,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             int newPointerIndex = pointerIndex == 0 ? 1 : 0;
             mActivePointerId = ev.getPointerId(newPointerIndex);
         }
-
-    }
-
-    public interface OnChildScrollUpCallback {
-        boolean canChildScrollUp(@NonNull IRefreshLayout var1, @Nullable View var2);
     }
 
     public interface OnRefreshListener {
