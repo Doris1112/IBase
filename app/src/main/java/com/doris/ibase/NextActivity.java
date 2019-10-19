@@ -39,8 +39,8 @@ public class NextActivity extends IBaseAppCompatActivity implements
         mRefreshLayout.setOnStartRefreshAnimListener(new IRefreshLayout.OnStartRefreshAnimListener() {
             @Override
             public void onStart() {
-                mAdapter.currentRefresh();
                 Log.d("recycler", "onStart: 正在刷新");
+                mAdapter.currentRefresh();
             }
         });
         mRefreshLayout.setOnRefreshListener(new IRefreshLayout.OnRefreshListener() {
@@ -50,9 +50,9 @@ public class NextActivity extends IBaseAppCompatActivity implements
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        mRefreshLayout.setRefreshing(false);
                         mAdapter.setDataList(Poetry.getPoetry1());
                         mAdapter.canLoadMore();
-                        mRefreshLayout.setRefreshing(false);
                     }
                 }, 5000);
             }
@@ -139,23 +139,28 @@ public class NextActivity extends IBaseAppCompatActivity implements
 
     @Override
     public void onLoadMore() {
-        Log.d("recycler", "onLoadMore: 正在加载更多");
-        mRefreshLayout.setEnabled(false);
+        mPageIndex++;
+        Log.d("recycler", "onLoadMore: 正在加载更多" + mPageIndex);
+        mRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setEnabled(false);
+            }
+        }, 100);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mPageIndex == 3) {
+                mRefreshLayout.setEnabled(true);
+                if (mPageIndex == 5) {
                     mAdapter.loadMoreError();
-                } else if (mPageIndex > 3) {
+                } else if (mPageIndex > 5) {
                     mAdapter.stopLoadMore();
                 } else {
                     mAdapter.add(Poetry.getPoetry1());
                     mAdapter.canLoadMore();
                 }
-                mPageIndex ++;
-                mRefreshLayout.setEnabled(true);
             }
-        },5000);
+        }, 5000);
     }
 
 }

@@ -34,7 +34,7 @@ public abstract class IBaseLoadMoreHolder {
     public void changeMoreState(int state) {
         if (mState != state) {
             mState = state;
-            mHandler.sendEmptyMessageDelayed(mState, 100);
+            mHandler.sendEmptyMessage(mState);
         }
     }
 
@@ -64,12 +64,7 @@ public abstract class IBaseLoadMoreHolder {
 
     public void onLoadMore() {
         if (mLoadMoreListener != null) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mLoadMoreListener.onLoadMore();
-                }
-            }, 200);
+            mLoadMoreListener.onLoadMore();
         }
     }
 

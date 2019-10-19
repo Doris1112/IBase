@@ -3,7 +3,6 @@ package com.doris.ibase.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -54,7 +53,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     /**
      * 加载更多；
      * mNeedLoadMore：是否需要加载更多；
-     * mLoadMoreIsLast：加载跟多是否需要放到最后面（有底部时起作用，放到底部下面）
+     * mLoadMoreIsLast：加载更多是否需要放到最后面（有底部时起作用，放到底部下面）；
      * mLoadMoreHolder：加载更多Holder，默认IDefaultLoadMoreHolder；
      * mLoadMoreRecycler: 需要加载更多的RecyclerView
      */
@@ -508,42 +507,23 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         if (mLoadMoreRecycler == null) {
             return;
         }
-        int lastVisiblePosition;
         RecyclerView.LayoutManager layoutManager = mLoadMoreRecycler.getLayoutManager();
         if (layoutManager == null) {
             return;
         }
-        if (layoutManager instanceof GridLayoutManager) {
-            lastVisiblePosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
-        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            int[] spanCount = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
-            ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(spanCount);
-            lastVisiblePosition = findMax(spanCount);
-        } else {
-            lastVisiblePosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
-        }
-        int lastItemPosition;
-        if (mLoadMoreIsLast) {
-            lastItemPosition = layoutManager.getItemCount() - 1;
-        } else {
-            lastItemPosition = layoutManager.getItemCount() - getFooterCount() - 1;
-        }
-        if (lastVisiblePosition >= lastItemPosition) {
-            if (mLoadMoreHolder.canLoadMore()) {
-                mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
-                mLoadMoreHolder.onLoadMore();
+        if (mLoadMoreRecycler.getChildCount() > 0) {
+            int lastVisiblePosition = mLoadMoreRecycler.getChildLayoutPosition(
+                    mLoadMoreRecycler.getChildAt(mLoadMoreRecycler.getChildCount() - 1));
+            int loadMorePosition = mLoadMoreIsLast ? layoutManager.getItemCount() - 1 :
+                    layoutManager.getItemCount() - getFooterCount() - 1;
+            if (lastVisiblePosition >= loadMorePosition ||
+                    mLoadMoreRecycler.getChildCount() >= loadMorePosition) {
+                if (mLoadMoreHolder.canLoadMore()) {
+                    mLoadMoreHolder.changeMoreState(IBaseLoadMoreHolder.STATE_LOAD_MORE);
+                    mLoadMoreHolder.onLoadMore();
+                }
             }
         }
-    }
-
-    private int findMax(int[] lastPositions) {
-        int max = lastPositions[0];
-        for (int value : lastPositions) {
-            if (value > max) {
-                max = value;
-            }
-        }
-        return max;
     }
 
     /**
