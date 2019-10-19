@@ -20,7 +20,7 @@ import com.doris.ibase.widget.refresh.IRefreshLayout;
  * @date 2018/9/22
  */
 public class NextActivity extends IBaseAppCompatActivity implements
-        IBaseRecyclerAdapter.OnLoadMoreListener {
+        IBaseRecyclerAdapter.OnLoadMoreListener, IRefreshLayout.OnRefreshListener {
 
     private IRefreshLayout mRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -38,25 +38,12 @@ public class NextActivity extends IBaseAppCompatActivity implements
         mRefreshLayout = findViewById(R.id.refreshLayout);
         mRefreshLayout.setOnStartRefreshAnimListener(new IRefreshLayout.OnStartRefreshAnimListener() {
             @Override
-            public void onStart() {
+            public void onStartRefreshAnim() {
                 Log.d("recycler", "onStart: 正在刷新");
                 mAdapter.currentRefresh();
             }
         });
-        mRefreshLayout.setOnRefreshListener(new IRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPageIndex = 1;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRefreshLayout.setRefreshing(false);
-                        mAdapter.setDataList(Poetry.getPoetry1());
-                        mAdapter.canLoadMore();
-                    }
-                }, 5000);
-            }
-        });
+        mRefreshLayout.setOnRefreshListener(this);
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PoetryAdapter(this);
@@ -78,6 +65,8 @@ public class NextActivity extends IBaseAppCompatActivity implements
         });
         mAdapter.needLoadMore(false, mRecyclerView, this);
         mRecyclerView.setAdapter(mAdapter);
+        mRefreshLayout.setRefreshing(true);
+        onRefresh();
     }
 
     private void addHeader() {
@@ -135,6 +124,19 @@ public class NextActivity extends IBaseAppCompatActivity implements
                 return footerI;
             }
         });
+    }
+
+    @Override
+    public void onRefresh() {
+        mPageIndex = 1;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(false);
+                mAdapter.setDataList(Poetry.getPoetry());
+                mAdapter.stopLoadMore();
+            }
+        }, 5000);
     }
 
     @Override

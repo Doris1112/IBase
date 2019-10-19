@@ -466,6 +466,10 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         add(data);
     }
 
+    public IBaseLoadMoreHolder getLoadMoreHolder() {
+        return mLoadMoreHolder;
+    }
+
     /**
      * 是否需要加载更多
      */

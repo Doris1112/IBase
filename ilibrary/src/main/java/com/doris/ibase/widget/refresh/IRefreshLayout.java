@@ -45,7 +45,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
     private final int[] mParentScrollConsumed;
     private final int[] mParentOffsetInWindow;
     private boolean mNestedScrollInProgress;
-    private int mMediumAnimationDuration;
     private int mCurrentTargetOffsetTop;
     private float mInitialMotionY;
     private float mInitialDownY;
@@ -115,7 +114,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             }
         };
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-        mMediumAnimationDuration = 2000;
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(2.0F);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -449,7 +447,10 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             int endTarget = mSpinnerOffsetEnd + mOriginalOffsetTop;
             setTargetOffsetTopAndBottom(endTarget - mCurrentTargetOffsetTop);
             mNotify = false;
-            startScaleUpAnimation(mRefreshListener);
+            mCircleView.setVisibility(View.VISIBLE);
+            mProgress.setAlpha(255);
+            mProgress.start();
+            mCurrentTargetOffsetTop = mCircleView.getTop();
         } else {
             setRefreshing(refreshing, false);
         }
@@ -500,22 +501,6 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         addView(mCircleView);
     }
 
-    private void startScaleUpAnimation(Animation.AnimationListener listener) {
-        mCircleView.setVisibility(View.VISIBLE);
-        mProgress.setAlpha(255);
-        Animation scaleAnimation = new Animation() {
-            public void applyTransformation(float interpolatedTime, Transformation t) {
-                setAnimationProgress(interpolatedTime);
-            }
-        };
-        scaleAnimation.setDuration((long) mMediumAnimationDuration);
-        if (listener != null) {
-            mCircleView.setAnimationListener(listener);
-        }
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(scaleAnimation);
-    }
-
     private void setAnimationProgress(float progress) {
         mCircleView.setScaleX(progress);
         mCircleView.setScaleY(progress);
@@ -526,10 +511,10 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
             mNotify = notify;
             ensureTarget();
             mRefreshing = refreshing;
-            if (mNotify && mStartListener != null) {
-                mStartListener.onStart();
-            }
             if (mRefreshing) {
+                if (mNotify && mStartListener != null) {
+                    mStartListener.onStartRefreshAnim();
+                }
                 animateOffsetToCorrectPosition(mCurrentTargetOffsetTop, mRefreshListener);
             } else {
                 startScaleDownAnimation(mRefreshListener);
@@ -634,9 +619,8 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
                 public void onAnimationRepeat(Animation animation) {
                 }
             };
-
             animateOffsetToStartPosition(mCurrentTargetOffsetTop, listener);
-            mProgress.setArrowEnabled(false);
+            mProgress.setArrowEnabled(true);
         }
     }
 
@@ -699,7 +683,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
     }
 
     public interface OnStartRefreshAnimListener {
-        void onStart();
+        void onStartRefreshAnim();
     }
 
     private class ICircleImageView extends android.support.v7.widget.AppCompatImageView {
