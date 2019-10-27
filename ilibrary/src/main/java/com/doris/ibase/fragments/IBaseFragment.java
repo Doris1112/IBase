@@ -3,12 +3,13 @@ package com.doris.ibase.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.doris.ibase.config.INumberConfig;
 
@@ -16,7 +17,7 @@ import com.doris.ibase.config.INumberConfig;
  * @author Doris
  * @date 2018/8/20
  */
-public abstract class IBaseFragmentV4 extends Fragment {
+public abstract class IBaseFragment extends Fragment {
 
     protected View mRoot;
     /**

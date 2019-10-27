@@ -3,10 +3,11 @@ package com.doris.ibase.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 
 import com.doris.ibase.helper.ISystemBarTintManager;
 

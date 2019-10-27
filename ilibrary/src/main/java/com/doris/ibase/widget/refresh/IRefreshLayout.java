@@ -5,14 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ListViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -24,6 +16,16 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ListViewCompat;
 
 import com.doris.ibase.ilibrary.R;
 
@@ -262,7 +264,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public void onNestedScrollAccepted(@NonNull View child, @NonNull View target, int axes) {
         mNestedScrollingParentHelper.onNestedScrollAccepted(child, target, axes);
-        startNestedScroll(axes & 2);
+        startNestedScroll(axes & ViewCompat.SCROLL_AXIS_VERTICAL);
         mTotalUnconsumed = 0.0F;
         mNestedScrollInProgress = true;
     }
@@ -686,7 +688,7 @@ public class IRefreshLayout extends ViewGroup implements NestedScrollingParent, 
         void onStartRefreshAnim();
     }
 
-    private class ICircleImageView extends android.support.v7.widget.AppCompatImageView {
+    private class ICircleImageView extends AppCompatImageView {
 
         private Animation.AnimationListener mListener;
 
