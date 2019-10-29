@@ -8,7 +8,7 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.doris.ibase.helper.IAppCrashHandler;
-import com.doris.ibase.utils.ILogUtils;
+import com.doris.ibase.utils.IBaseLogUtils;
 
 /**
  * @author Doris
@@ -32,6 +32,6 @@ public abstract class IBaseApplication extends MultiDexApplication {
         MultiDex.install(this);
     }
 
-    protected abstract ILogUtils getLogUtils();
+    protected abstract IBaseLogUtils getLogUtils();
 
 }

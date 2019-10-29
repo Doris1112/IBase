@@ -20,7 +20,7 @@ import java.util.Date;
  * @author Doris
  * @date 2018/8/20
  */
-public abstract class ILogUtils {
+public abstract class IBaseLogUtils {
 
     /**
      * 获取打印 TAG

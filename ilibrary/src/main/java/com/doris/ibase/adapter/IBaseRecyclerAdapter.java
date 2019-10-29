@@ -458,13 +458,27 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
      * 修改数据集合
      */
     public void setDataList(Collection<? extends Data> dataList) {
-        clear();
-        add(dataList);
+        synchronized (mLock) {
+            mDataList.clear();
+            if (dataList != null && dataList.size() > 0) {
+                mDataList.addAll(dataList);
+            }
+        }
+        if (mNotifyOnChange) {
+            notifyDataSetChanged();
+        }
     }
 
     public void setDataList(Data data) {
-        clear();
-        add(data);
+        synchronized (mLock) {
+            mDataList.clear();
+            if (data != null) {
+                mDataList.add(data);
+            }
+        }
+        if (mNotifyOnChange) {
+            notifyDataSetChanged();
+        }
     }
 
     public IBaseLoadMoreHolder getLoadMoreHolder() {

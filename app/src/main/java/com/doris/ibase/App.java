@@ -1,7 +1,7 @@
 package com.doris.ibase;
 
 import com.doris.ibase.application.IBaseApplication;
-import com.doris.ibase.utils.ILogUtils;
+import com.doris.ibase.utils.IBaseLogUtils;
 
 /**
  * @author Doris
@@ -10,7 +10,7 @@ import com.doris.ibase.utils.ILogUtils;
 public class App extends IBaseApplication {
 
     @Override
-    protected ILogUtils getLogUtils() {
+    protected IBaseLogUtils getLogUtils() {
         return null;
     }
 }

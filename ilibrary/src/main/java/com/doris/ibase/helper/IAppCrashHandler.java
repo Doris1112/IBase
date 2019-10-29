@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.doris.ibase.utils.ILogUtils;
+import com.doris.ibase.utils.IBaseLogUtils;
+
+import java.lang.ref.WeakReference;
 
 /**
  * @author Doris
@@ -14,14 +16,14 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
 
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private static IAppCrashHandler instance;
-    private Context mContext;
-    private ILogUtils logUtils;
+    private WeakReference<Context> mContext;
+    private IBaseLogUtils logUtils;
 
-    private IAppCrashHandler(ILogUtils logUtils) {
+    private IAppCrashHandler(IBaseLogUtils logUtils) {
         this.logUtils = logUtils;
     }
 
-    public static IAppCrashHandler getInstance(ILogUtils logUtils) {
+    public static IAppCrashHandler getInstance(IBaseLogUtils logUtils) {
         if (instance == null) {
             instance = new IAppCrashHandler(logUtils);
         }
@@ -29,7 +31,7 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     public void init(Context context) {
-        mContext = context;
+        mContext = new WeakReference<>(context);
         //获取系统默认的UncaughtException处理器
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         //设置该CrashHandler为程序的默认处理器
@@ -55,20 +57,23 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-        saveCrashInfoToFile(ex, mContext);
+        saveCrashInfoToFile(ex);
         return true;
     }
 
-    public void saveCrashInfoToFile(Throwable ex, Context ctx) {
+    private void saveCrashInfoToFile(Throwable ex) {
+        if (mContext.get() == null) {
+            return;
+        }
         try {
-            PackageManager pm = ctx.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(), PackageManager.GET_ACTIVITIES);
-            if (pi != null) {
-                if (logUtils != null){
+            if (logUtils != null) {
+                PackageManager pm = mContext.get().getPackageManager();
+                PackageInfo pi = pm.getPackageInfo(mContext.get().getPackageName(),
+                        PackageManager.GET_ACTIVITIES);
+                if (pi != null) {
                     logUtils.writeLog("程序崩溃！版本号: " + pi.versionName);
-                    logUtils.writeLog(ex);
                 }
-                ex.printStackTrace();
+                logUtils.writeLog(ex);
             }
         } catch (Exception e) {
             e.printStackTrace();
