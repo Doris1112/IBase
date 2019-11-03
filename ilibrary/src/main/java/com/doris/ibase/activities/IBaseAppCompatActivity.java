@@ -4,8 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.doris.ibase.config.INumberConfig;
+import com.doris.ibase.fragments.IBaseFragment;
+
+import java.util.List;
 
 /**
  * @author Doris
@@ -79,6 +83,27 @@ public abstract class IBaseAppCompatActivity extends AppCompatActivity {
      */
     protected void initData() {
 
+    }
+
+    @Override
+    public final void onBackPressed() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments.size() > 0){
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof IBaseFragment){
+                    if (((IBaseFragment) fragment).onBackPressed()){
+                        return;
+                    }
+                }
+            }
+        }
+        if (onBack()){
+            super.onBackPressed();
+        }
+    }
+
+    protected boolean onBack(){
+        return true;
     }
 
     @Override
