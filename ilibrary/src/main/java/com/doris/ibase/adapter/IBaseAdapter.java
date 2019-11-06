@@ -10,6 +10,7 @@ import java.util.LinkedList;
  * @author Doris
  * @date 2018/3/1
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class IBaseAdapter<T> extends BaseAdapter {
 
     protected Context mContext;

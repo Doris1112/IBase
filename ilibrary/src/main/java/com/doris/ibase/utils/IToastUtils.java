@@ -1,5 +1,6 @@
 package com.doris.ibase.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import com.doris.ibase.ilibrary.R;
  * @author Doris
  * @date 2018/9/2
  */
+@SuppressWarnings("WeakerAccess")
 public class IToastUtils {
 
     private static Handler uiHandler = new Handler(Looper.getMainLooper());
@@ -77,7 +79,12 @@ public class IToastUtils {
         });
     }
 
-    // 自定义显示位置
+    /**
+     * 自定义显示位置
+     * @param context Context
+     * @param gravity 显示位置
+     * @param resId 显示消息
+     */
     public static void showToast(Context context, int gravity, int resId) {
         if (context == null) {
             return;
@@ -105,7 +112,12 @@ public class IToastUtils {
         });
     }
 
-    // 显示在中间大Toast
+    /**
+     * 显示在中间大Toast
+     * @param context Context
+     * @param resId 显示文字
+     * @param flagRes 显示图片
+     */
     public static void showBigToastCenter(Context context, int resId, int flagRes) {
         showBigToastCenter(context, context.getString(resId), flagRes, TOAST_DEFAULT_TIME);
     }
@@ -137,6 +149,7 @@ public class IToastUtils {
             return;
         }
         Toast toast = new Toast(context);
+        @SuppressLint("InflateParams")
         View view = LayoutInflater.from(context).inflate(R.layout.i_toast, null);
         TextView textView = view.findViewById(R.id.i_tv_toast);
         textView.setText(text);
@@ -151,6 +164,7 @@ public class IToastUtils {
             return;
         }
         Toast toast = new Toast(context);
+        @SuppressLint("InflateParams")
         View view = LayoutInflater.from(context).inflate(R.layout.i_toast, null);
         TextView textView = view.findViewById(R.id.i_tv_toast);
         textView.setText(text);
@@ -162,6 +176,7 @@ public class IToastUtils {
 
     private static void showBigToast(final Context context, final String text, int flagRes, final int time) {
         Toast toast = new Toast(context);
+        @SuppressLint("InflateParams")
         View view = LayoutInflater.from(context).inflate(R.layout.i_toast_big, null);
         TextView textView = view.findViewById(R.id.i_tv_toast);
         ImageView imageView = view.findViewById(R.id.i_tv_toast_img);

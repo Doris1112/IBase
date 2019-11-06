@@ -1,5 +1,6 @@
 package com.doris.ibase.utils;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -12,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,55 +27,55 @@ public abstract class IBaseLogUtils {
     /**
      * 获取打印 TAG
      */
-    public abstract String getTag();
+    abstract String getTag();
 
     /**
      * 获取日志保存目录
      */
-    public abstract String getLogSavePath();
+    abstract String getLogSavePath();
 
     /**
      * 日志开关
      */
-    protected abstract boolean getLogSwitch();
+    abstract boolean getLogSwitch();
 
     /**
      * 是否加密日志
      */
-    protected abstract boolean getLogEncrypt();
+    abstract boolean getLogEncrypt();
 
     /**
      * 解密
      */
-    protected abstract String decode(String string);
+    abstract String decode(String string);
 
     /**
      * 加密
      */
-    protected abstract String encode(String string);
+    abstract String encode(String string);
 
     /**
      * 读取日志
      */
     public String redLog(String filePath) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         try {
             File file = new File(filePath);
             InputStream stream = new FileInputStream(file);
-            if (stream != null) {
-                InputStreamReader reader = new InputStreamReader(stream);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String line;
-                //分行读取
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (getLogEncrypt()) {
-                        result.append(decode(line) + "\n");
-                    } else {
-                        result.append(line + "\n");
-                    }
+            InputStreamReader reader = new InputStreamReader(stream);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            //分行读取
+            while ((line = bufferedReader.readLine()) != null) {
+                if (getLogEncrypt()) {
+                    result.append(decode(line))
+                            .append("\n");
+                } else {
+                    result.append(line)
+                            .append("\n");
                 }
-                stream.close();
             }
+            stream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,7 +104,7 @@ public abstract class IBaseLogUtils {
                     msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
-                fos.write(msg.getBytes("UTF-8"));
+                fos.write(msg.getBytes(StandardCharsets.UTF_8));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -148,7 +150,7 @@ public abstract class IBaseLogUtils {
                     msg += "\r\n";
                 }
                 fos = new FileOutputStream(file, true);
-                fos.write(msg.getBytes("UTF-8"));
+                fos.write(msg.getBytes(StandardCharsets.UTF_8));
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -191,11 +193,13 @@ public abstract class IBaseLogUtils {
     /**
      * 检查日志文件是否存在
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private File checkLogFileIsExist() {
         File file = new File(getLogSavePath());
         if (!file.exists()) {
             file.mkdirs();
         }
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String dateStr = sdf.format(new Date());
         file = new File(getLogSavePath() + dateStr + ".txt");
@@ -219,11 +223,11 @@ public abstract class IBaseLogUtils {
             File tempFile = new File(getLogSavePath());
             File[] files = tempFile.listFiles();
             if (files == null) {
-                return ret;
+                return false;
             }
-            for (int i = 0; i < files.length; i++) {
-                String name = files[i].getName().trim();
-                if (name != null && name.equalsIgnoreCase(file.getName())) {
+            for (File value : files) {
+                String name = value.getName().trim();
+                if (name.equalsIgnoreCase(file.getName())) {
                     ret = true;
                     break;
                 }

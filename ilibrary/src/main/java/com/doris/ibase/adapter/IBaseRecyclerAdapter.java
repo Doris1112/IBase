@@ -21,6 +21,7 @@ import java.util.LinkedList;
  * @author Doris
  * @date 2018/10/28
  */
+@SuppressWarnings({"WeakerAccess", "unchecked"})
 public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IBaseViewHolder>
         implements View.OnClickListener, View.OnLongClickListener,
         IHolderUpdateCallback<Data> {
@@ -165,7 +166,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
     private IBaseViewHolder<Data> getViewHolder(ViewGroup parent, int viewType) {
         View root = LayoutInflater.from(parent.getContext())
                 .inflate(viewType, parent, false);
-        IBaseViewHolder<Data> holder = createContentViewHolder(root);
+        IBaseViewHolder<Data> holder = createContentViewHolder(root, viewType);
         root.setTag(R.id.tag_recycler_holder, holder);
         root.setOnClickListener(this);
         root.setOnLongClickListener(this);
@@ -173,7 +174,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
         return holder;
     }
 
-    public abstract IBaseViewHolder<Data> createContentViewHolder(View root);
+    public abstract IBaseViewHolder<Data> createContentViewHolder(View root, int viewTyp);
 
     @Override
     public final void onBindViewHolder(@NonNull IBaseViewHolder holder, int position) {
@@ -189,7 +190,7 @@ public abstract class IBaseRecyclerAdapter<Data> extends RecyclerView.Adapter<IB
             mFooterList.get(index).onBindView(holder.itemView);
             return;
         }
-        //
+        // 需要加载更多
         if (mNeedLoadMore) {
             if (position == getItemCount() - 1) {
                 return;

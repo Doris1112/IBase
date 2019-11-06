@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @author Doris
  * @date 2018/10/28
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
 
     private Data mData;
@@ -22,7 +23,7 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
     /**
      * 用于绑定数据的触发
      */
-    public void bind(Data data, int position) {
+    void bind(Data data, int position) {
         mData = data;
         onBind(data, position);
     }
@@ -55,8 +56,7 @@ public abstract class IBaseViewHolder<Data> extends RecyclerView.ViewHolder {
         return mData;
     }
 
-    public IBaseViewHolder<Data> setHolderUpdateCallback(IHolderUpdateCallback<Data> callback){
+    public void setHolderUpdateCallback(IHolderUpdateCallback<Data> callback) {
         mCallback = callback;
-        return this;
     }
 }

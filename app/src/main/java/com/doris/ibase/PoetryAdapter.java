@@ -24,7 +24,7 @@ public class PoetryAdapter extends IBaseRecyclerAdapter<Poetry> {
     }
 
     @Override
-    public IBaseViewHolder<Poetry> createContentViewHolder(View root) {
+    public IBaseViewHolder<Poetry> createContentViewHolder(View root, int viewType) {
         return new Holder(root);
     }
 

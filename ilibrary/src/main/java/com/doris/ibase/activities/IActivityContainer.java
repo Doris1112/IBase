@@ -9,6 +9,7 @@ import java.util.List;
  * @author Doris
  * @date 2018/8/20
  */
+@SuppressWarnings("WeakerAccess")
 public class IActivityContainer {
 
     private IActivityContainer() { }

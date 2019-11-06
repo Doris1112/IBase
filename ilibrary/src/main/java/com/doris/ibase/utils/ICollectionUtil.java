@@ -13,6 +13,7 @@ import java.util.Set;
  * @author Doris
  * @date 2019/10/29
  */
+@SuppressWarnings("unchecked")
 public class ICollectionUtil {
 
     /**
@@ -23,7 +24,6 @@ public class ICollectionUtil {
      * @param <T>    Class
      * @return 转换完成后的数组
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(List<T> items, Class<T> tClass) {
         if (items == null || items.size() == 0) {
             return null;
@@ -46,7 +46,6 @@ public class ICollectionUtil {
      * @param <T>    Class
      * @return 转换完成后的数组
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(Set<T> items, Class<T> tClass) {
         if (items == null || items.size() == 0){
             return null;

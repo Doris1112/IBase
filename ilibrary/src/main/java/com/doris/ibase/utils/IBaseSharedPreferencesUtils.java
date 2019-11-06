@@ -9,6 +9,7 @@ import java.util.Set;
  * @author Doris
  * @date 2018/8/20
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class IBaseSharedPreferencesUtils {
 
     /**

@@ -1,5 +1,6 @@
 package com.doris.ibase.utils;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
@@ -62,6 +63,7 @@ public class IStatusBarUtil {
     private static void setMIUIStatusBarDarkIcon(@NonNull Activity activity, boolean darkIcon) {
         Class<? extends Window> clazz = activity.getWindow().getClass();
         try {
+            @SuppressLint("PrivateApi")
             Class<?> layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
             Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
             int darkModeFlag = field.getInt(layoutParams);
@@ -75,11 +77,14 @@ public class IStatusBarUtil {
     /**
      * 修改魅族状态栏字体颜色 Flyme 4.0
      */
+    @SuppressWarnings("JavaReflectionMemberAccess")
     private static void setMeizuStatusBarDarkIcon(@NonNull Activity activity, boolean darkIcon) {
         try {
             WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
-            Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
-            Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
+            Field darkFlag = WindowManager.LayoutParams.class
+                    .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
+            Field meizuFlags = WindowManager.LayoutParams.class
+                    .getDeclaredField("meizuFlags");
             darkFlag.setAccessible(true);
             meizuFlags.setAccessible(true);
             int bit = darkFlag.getInt(null);

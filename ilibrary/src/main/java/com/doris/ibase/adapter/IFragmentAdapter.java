@@ -14,19 +14,25 @@ import java.util.List;
  * @author Doris
  * @date 2019/10/17
  */
+@SuppressWarnings("WeakerAccess")
 public class IFragmentAdapter extends FragmentPagerAdapter {
 
     private FragmentManager mFragmentManager;
     private final List<Fragment> mFragments;
     private final List<String> mTitles;
 
-    public IFragmentAdapter(FragmentManager fm) {
-        super(fm);
+    public IFragmentAdapter(@NonNull FragmentManager fm) {
+        this(fm, 0);
+    }
+
+    public IFragmentAdapter(@NonNull FragmentManager fm, int behavior) {
+        super(fm, behavior);
         mFragmentManager = fm;
         mFragments = new ArrayList<>();
         mTitles = new ArrayList<>();
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int i) {
         return mFragments.get(i);
@@ -35,7 +41,7 @@ public class IFragmentAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        if (mTitles.size() == mFragments.size()){
+        if (mTitles.size() == mFragments.size()) {
             return mTitles.get(position);
         }
         return super.getPageTitle(position);
@@ -52,11 +58,11 @@ public class IFragmentAdapter extends FragmentPagerAdapter {
         return POSITION_NONE;
     }
 
-    public void add(Fragment fragment){
+    public void add(Fragment fragment) {
         mFragments.add(fragment);
     }
 
-    public void add(Fragment fragment, String title){
+    public void add(Fragment fragment, String title) {
         mFragments.add(fragment);
         mTitles.add(title);
     }

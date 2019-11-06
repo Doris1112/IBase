@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
  * @author Doris
  * @date 2018/10/30
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class IBaseLoadMoreHolder {
 
     protected int mState = -1;
@@ -36,13 +37,6 @@ public abstract class IBaseLoadMoreHolder {
             mState = state;
             mHandler.sendEmptyMessage(mState);
         }
-    }
-
-    /**
-     * 获取加载更多状态
-     */
-    public int getLoadMoreState() {
-        return mState;
     }
 
     /**

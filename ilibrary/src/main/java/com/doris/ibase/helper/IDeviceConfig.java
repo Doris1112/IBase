@@ -1,5 +1,6 @@
 package com.doris.ibase.helper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -125,6 +126,7 @@ public class IDeviceConfig {
     /**
      * 获取手机唯一标识
      */
+    @SuppressLint("HardwareIds")
     @RequiresPermission(android.Manifest.permission.READ_PHONE_STATE)
     public static String getOnlyCoding(Context context) {
         try {
@@ -166,8 +168,8 @@ public class IDeviceConfig {
                 }
             } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {
                 // 当前使用无线网络
-                WifiManager wifiManager = (WifiManager)
-                        context.getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext()
+                        .getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 // 得到IPV4地址
                 return intIp2StringIp(wifiInfo.getIpAddress());
