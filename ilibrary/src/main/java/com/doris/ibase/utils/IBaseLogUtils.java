@@ -22,37 +22,57 @@ import java.util.Date;
  * @author Doris
  * @date 2018/8/20
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class IBaseLogUtils {
+
+    /**
+     * 默认开启日志
+     */
+    protected boolean mLogSwitch = true;
+    /**
+     * 默认不加密
+     */
+    protected boolean mLogEncrypt = false;
 
     /**
      * 获取打印 TAG
      */
-    abstract String getTag();
+    protected abstract String getTag();
 
     /**
      * 获取日志保存目录
      */
-    abstract String getLogSavePath();
+    protected abstract String getLogSavePath();
 
     /**
-     * 日志开关
+     * 设置日志开关
+     * @param logSwitch 是否保存日志
      */
-    abstract boolean getLogSwitch();
+    public void setLogSwitch(boolean logSwitch){
+        mLogSwitch = logSwitch;
+    }
 
     /**
-     * 是否加密日志
+     * 设置是否加密日志
+     * @param logEncrypt 是否加密
      */
-    abstract boolean getLogEncrypt();
+    public void setLogEncrypt(boolean logEncrypt){
+        mLogEncrypt = logEncrypt;
+    }
 
     /**
      * 解密
      */
-    abstract String decode(String string);
+    protected String decode(String string){
+        return string;
+    }
 
     /**
      * 加密
      */
-    abstract String encode(String string);
+    protected String encode(String string){
+        return string;
+    }
 
     /**
      * 读取日志
@@ -67,7 +87,7 @@ public abstract class IBaseLogUtils {
             String line;
             //分行读取
             while ((line = bufferedReader.readLine()) != null) {
-                if (getLogEncrypt()) {
+                if (mLogEncrypt) {
                     result.append(decode(line))
                             .append("\n");
                 } else {
@@ -90,7 +110,7 @@ public abstract class IBaseLogUtils {
             return;
         }
         Log.i(getTag(), msg);
-        if (getLogSwitch()) {
+        if (mLogSwitch) {
             File file = checkLogFileIsExist();
             if (file == null) {
                 return;
@@ -98,7 +118,7 @@ public abstract class IBaseLogUtils {
             FileOutputStream fos = null;
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "  " + msg;
-                if (getLogEncrypt()) {
+                if (mLogEncrypt) {
                     msg = encode(msg) + "\r\n";
                 } else {
                     msg += "\r\n";
@@ -135,7 +155,7 @@ public abstract class IBaseLogUtils {
      */
     public void writeLog(Throwable throwable) {
         throwable.printStackTrace();
-        if (getLogSwitch()) {
+        if (mLogSwitch) {
             File file = checkLogFileIsExist();
             if (file == null) {
                 return;
@@ -144,7 +164,7 @@ public abstract class IBaseLogUtils {
             FileOutputStream fos = null;
             try {
                 msg = DateFormat.getDateTimeInstance().format(new Date()) + "  " + msg;
-                if (getLogEncrypt()) {
+                if (mLogEncrypt) {
                     msg = encode(msg) + "\r\n";
                 } else {
                     msg += "\r\n";
