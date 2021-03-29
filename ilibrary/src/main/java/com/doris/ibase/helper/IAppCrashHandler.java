@@ -17,7 +17,7 @@ public class IAppCrashHandler implements Thread.UncaughtExceptionHandler {
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private static IAppCrashHandler instance;
     private WeakReference<Context> mContext;
-    private IBaseLogUtils logUtils;
+    private final IBaseLogUtils logUtils;
 
     private IAppCrashHandler(IBaseLogUtils logUtils) {
         this.logUtils = logUtils;

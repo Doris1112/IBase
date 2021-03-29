@@ -14,7 +14,7 @@ import java.util.Set;
  * @date 2019/10/29
  */
 @SuppressWarnings("unchecked")
-public class ICollectionUtil {
+public class ICollectionUtils {
 
     /**
      * List集合转换为数组

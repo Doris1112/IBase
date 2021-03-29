@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  * @author Doris
  * @date 2019/1/7
  */
-public class IStatusBarUtil {
+public class IStatusBarUtils {
 
     /**
      * 设置状态栏颜色

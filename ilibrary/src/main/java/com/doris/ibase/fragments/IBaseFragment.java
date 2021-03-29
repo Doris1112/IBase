@@ -99,7 +99,7 @@ public abstract class IBaseFragment extends Fragment {
 
     }
 
-    protected final <T extends View> T findViewById(@IdRes int id) {
+    protected final <T extends View> T $(@IdRes int id) {
         if (mRoot != null) {
             return mRoot.findViewById(id);
         }

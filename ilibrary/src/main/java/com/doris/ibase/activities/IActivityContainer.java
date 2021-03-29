@@ -15,7 +15,7 @@ public class IActivityContainer {
     private IActivityContainer() { }
 
     private static IActivityContainer instance;
-    private List<Activity> activityStack = new ArrayList<>();
+    private final List<Activity> activityStack = new ArrayList<>();
 
     public static IActivityContainer getInstance() {
         if (instance == null){

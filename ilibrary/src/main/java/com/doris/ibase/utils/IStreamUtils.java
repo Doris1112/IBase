@@ -16,7 +16,7 @@ import java.io.OutputStream;
  * @date 2019/10/29
  */
 @SuppressWarnings("WeakerAccess")
-public class IStreamUtil {
+public class IStreamUtils {
 
     /**
      * Copy 文件
